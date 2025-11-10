@@ -125,8 +125,66 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        
+        // Download fresh literals every time the app comes to foreground
+        downloadFreshLiterals();
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
+    }
+    
+    /**
+     * Download fresh literals from the server and refresh UI
+     */
+    private void downloadFreshLiterals() {
+        Log.d("MainActivity", "========== DOWNLOADING LITERALS ON APP RESUME ==========");
+        StripeTerminalApplication app = StripeTerminalApplication.getInstance();
+        if (app != null && app.getLiteralsManager() != null) {
+            Log.d("MainActivity", "Initiating literals download from Google Sheets...");
+            app.getLiteralsManager().downloadFreshLiterals(new com.parkmeter.og.utils.DynamicLiteralsManager.LiteralsDownloadCallback() {
+                @Override
+                public void onSuccess() {
+                    Log.d("MainActivity", "✓ Successfully downloaded fresh literals on app resume");
+                    Log.d("MainActivity", "Total literals in cache: " + app.getLiteralsManager().getLiteralsCount());
+                    
+                    // Refresh the current fragment UI on the main thread
+                    runOnUiThread(() -> {
+                        refreshCurrentFragmentUI();
+                    });
+                }
+
+                @Override
+                public void onFailure(String error) {
+                    Log.e("MainActivity", "✗ Failed to download fresh literals on app resume: " + error);
+                }
+            });
+        } else {
+            Log.e("MainActivity", "✗ LiteralsManager is not available");
+        }
+    }
+    
+    /**
+     * Refresh the UI of the current fragment after literals are updated
+     */
+    private void refreshCurrentFragmentUI() {
+        try {
+            Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.container);
+            if (currentFragment != null) {
+                Log.d("MainActivity", "Refreshing UI for fragment: " + currentFragment.getClass().getSimpleName());
+                
+                // Trigger onResume to refresh the fragment
+                if (currentFragment instanceof HomeFragment) {
+                    ((HomeFragment) currentFragment).refreshUI();
+                }
+                // Add more fragment types here if needed
+            }
+        } catch (Exception e) {
+            Log.e("MainActivity", "Error refreshing fragment UI: " + e.getMessage(), e);
+        }
     }
 
     @Override

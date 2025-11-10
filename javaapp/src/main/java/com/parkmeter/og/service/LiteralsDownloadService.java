@@ -64,6 +64,19 @@ public class LiteralsDownloadService {
                     return;
                 }
 
+                // Log fetched data
+                Log.d(TAG, "========== FETCHED LITERALS DATA ==========");
+                Log.d(TAG, "Total literals fetched: " + literals.size());
+                for (int i = 0; i < Math.min(10, literals.size()); i++) {
+                    Literal literal = literals.get(i);
+                    Log.d(TAG, String.format("Literal[%d]: key='%s', en='%s', fr='%s'", 
+                        i, literal.getKey(), literal.getEnglish(), literal.getFrench()));
+                }
+                if (literals.size() > 10) {
+                    Log.d(TAG, "... and " + (literals.size() - 10) + " more literals");
+                }
+                Log.d(TAG, "==========================================");
+
                 // Save to local file
                 boolean saved = saveLiteralsToFile(literals);
                 if (!saved) {

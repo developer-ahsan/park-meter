@@ -12,7 +12,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
 
-    <application android:name=".StripeTerminalApplication" android:allowBackup="false" android:icon="@mipmap/launcher" android:label="${appName}" android:supportsRtl="true" android:theme="@style/Theme.Example" tools:ignore="GoogleAppIndexingWarning">
+    <application android:name=".StripeTerminalApplication" android:allowBackup="false" android:icon="@mipmap/ic_launcher_foreground" android:label="${appName}" android:supportsRtl="true" android:theme="@style/Theme.Example" tools:ignore="GoogleAppIndexingWarning">
         <activity android:name="com.parkmeter.og.MainActivity" android:screenOrientation="portrait" android:exported="true" android:theme="@style/Theme.Example.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

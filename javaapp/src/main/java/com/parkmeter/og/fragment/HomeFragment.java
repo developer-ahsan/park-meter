@@ -23,6 +23,7 @@ import com.parkmeter.og.model.Language;
 import com.parkmeter.og.network.Park45ApiClient;
 import com.parkmeter.og.network.Park45ApiService;
 import com.parkmeter.og.utils.AppThemeManager;
+import com.parkmeter.og.utils.DynamicLiteralsManager;
 import com.parkmeter.og.utils.LiteralsHelper;
 import com.parkmeter.og.utils.LanguageManager;
 import retrofit2.Call;
@@ -277,8 +278,8 @@ public class HomeFragment extends Fragment {
 			enterVehicleButton.setTextColor(android.graphics.Color.WHITE);
 		}
 
-		// Always show "Park45 Meter" in the banner
-		tvAppName.setText(LiteralsHelper.getText(getContext(), "park45_meter"));
+		// Always show app name in the banner
+		tvAppName.setText(LiteralsHelper.getText(getContext(), "app_name"));
 		
 		// Update organization color in theme manager
 		String orgColor = appState.getOrganizationColor();
@@ -292,7 +293,7 @@ public class HomeFragment extends Fragment {
 		// Update banner background color with gradient
 		if (bannerLayout != null) {
 			AppThemeManager.getInstance().applyViewBackgroundGradient(bannerLayout);
-			// Always use white text for "Park45 Meter" in banner
+			// Always use white text for app name in banner
 			tvAppName.setTextColor(android.graphics.Color.WHITE);
 		}
 		
@@ -338,6 +339,16 @@ public class HomeFragment extends Fragment {
 		
 		// Force refresh the logo when returning from zone selection
 		loadOrganizationLogo();
+	}
+	
+	/**
+	 * Public method to refresh UI after literals are updated
+	 */
+	public void refreshUI() {
+		if (getView() != null && isAdded()) {
+			updateUI();
+			loadOrganizationLogo();
+		}
 	}
 
 	@Override
