@@ -1,7 +1,7 @@
 <resources>
     <!-- Existing strings -->
     <string name="amount">MONTANT</string>
-    <string name="app_name">Parkapp Compteur</string>
+    <string name="app_name">Park45 Compteur</string>
     <string name="cancel">Annuler</string>
     <string name="back_home">Retour à la maison</string>
     <string name="check_for_update">Vérifier les mises à jour</string>
@@ -198,7 +198,7 @@
     <string name="na">N/A</string>
     <string name="enter_license_plate_button">Entrer la plaque d\'immatriculation</string>
     <string name="no_zone_selected">Aucune zone sélectionnée</string>
-    <string name="park45_meter">Parkapp Compteur</string>
+    <string name="park45_meter">Park45 Compteur</string>
 
     <!-- Content Descriptions -->
     <string name="back_icon_description">Retour</string>

@@ -1,7 +1,7 @@
 <resources>
     <!-- Existing strings -->
     <string name="amount">AMOUNT</string>
-    <string name="app_name">Parkapp Meter</string>
+    <string name="app_name">Park45 Meter</string>
     <string name="cancel">Cancel</string>
     <string name="back_home">Return to Home</string>
     <string name="check_for_update">Check for update</string>
@@ -200,7 +200,7 @@
     <string name="na">N/A</string>
     <string name="enter_license_plate_button">Enter License Plate</string>
     <string name="no_zone_selected">No Zone Selected</string>
-    <string name="park45_meter">Parkapp Meter</string>
+    <string name="park45_meter">Park45 Meter</string>
 
     <!-- Content Descriptions -->
     <string name="back_icon_description">Back</string>

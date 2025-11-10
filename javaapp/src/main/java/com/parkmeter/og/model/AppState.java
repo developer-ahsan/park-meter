@@ -38,7 +38,7 @@ public class AppState {
     }
 
     public String getOrganizationColor() {
-        return selectedOrganization != null ? selectedOrganization.getColor() : "#f7951c";
+        return selectedOrganization != null ? selectedOrganization.getColor() : "#f7941c";
     }
 
     public String getOrganizationLogoUrl() {
@@ -58,15 +58,15 @@ public class AppState {
                 return logo;
             }
             if (logo.startsWith("/")) {
-                return "https://parkapp.ca/cwp_api" + logo;
+                return "https://park45.ca/park45-api" + logo;
             }
-            return "https://parkapp.ca/cwp_api/" + logo;
+            return "https://park45.ca/park45-api/" + logo;
         }
         return null;
     }
 
     public String getOrganizationName() {
-        return selectedOrganization != null ? selectedOrganization.getOrgName() : "Parkapp Meter";
+        return selectedOrganization != null ? selectedOrganization.getOrgName() : "Park45 Meter";
     }
     
     // Get Zone ID for use in next screens

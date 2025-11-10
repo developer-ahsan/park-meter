@@ -11,7 +11,7 @@ public class ColorUtils {
      */
     public static int hexToColor(String hexColor) {
         if (hexColor == null || hexColor.isEmpty()) {
-            return Color.parseColor("#f7951c"); // Default color
+            return Color.parseColor("#f7941c"); // Default color
         }
         
         try {
@@ -52,7 +52,7 @@ public class ColorUtils {
      */
     public static String getDarkerColor(String hexColor) {
         if (hexColor == null || hexColor.isEmpty()) {
-            return "#e6850a"; // Default darker orange
+            return "#d67a0f"; // Default darker orange
         }
         
         try {
@@ -62,7 +62,7 @@ public class ColorUtils {
             hsv[2] = Math.max(0.0f, hsv[2] - 0.2f); // Make darker by reducing value
             return String.format("#%06X", (0xFFFFFF & Color.HSVToColor(hsv)));
         } catch (Exception e) {
-            return "#e6850a"; // Default darker orange
+            return "#d67a0f"; // Default darker orange
         }
     }
 } 

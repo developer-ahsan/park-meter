@@ -1,6 +1,6 @@
 key,english,french
 amount,AMOUNT,MONTANT
-app_name,Parkapp Meter,Parkapp Compteur
+app_name,Park45 Meter,Park45 Compteur
 cancel,Cancel,Annuler
 back_home,Return to Home,Retour à la maison
 check_for_update,Check for update,Vérifier les mises à jour
@@ -171,7 +171,7 @@ code_label,Code: %1$s,Code : %1$s
 na,N/A,N/A
 enter_license_plate_button,Enter License Plate,Entrer la plaque d'immatriculation
 no_zone_selected,No Zone Selected,Aucune zone sélectionnée
-park45_meter,Parkapp Meter,Parkapp Compteur
+park45_meter,Park45 Meter,Park45 Compteur
 back_icon_description,Back,Retour
 app_logo_description,App Logo,Logo de l'application
 welcome_to,Welcome to,Bienvenue à

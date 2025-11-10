@@ -27,7 +27,7 @@ import okhttp3.Response;
 public class LiteralsDownloadService {
     private static final String TAG = "LiteralsDownloadService";
     private static final String LITERALS_FILE = "literals.json";
-    private static final String GOOGLE_SHEETS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTrC_EcFDpu0YM722BhD2x-nsvTiMNMx6AoMXS4LAtjkWA289GfUlrctrQM56AG0ULgYolkRJIk83-h/pub?gid=1687686550&single=true&output=csv";
+    private static final String GOOGLE_SHEETS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTrC_EcFDpu0YM722BhD2x-nsvTiMNMx6AoMXS4LAtjkWA289GfUlrctrQM56AG0ULgYolkRJIk83-h/pub?gid=593392718&single=true&output=csv";
     
     private final Context context;
     private final OkHttpClient httpClient;

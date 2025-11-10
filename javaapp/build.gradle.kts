@@ -62,7 +62,7 @@ android {
             isPseudoLocalesEnabled = false
             
             // Production optimizations
-            manifestPlaceholders["appName"] = "Parkapp Meter"
+            manifestPlaceholders["appName"] = "Park45 Meter"
             buildConfigField("boolean", "DEBUG", "false")
             buildConfigField("boolean", "ENABLE_LOGGING", "false")
         }
@@ -70,7 +70,7 @@ android {
         debug {
             applicationIdSuffix = ".debug"
             versionNameSuffix = "-debug"
-            manifestPlaceholders["appName"] = "Parkapp Meter (Debug)"
+            manifestPlaceholders["appName"] = "Park45 Meter (Debug)"
             buildConfigField("boolean", "DEBUG", "true")
             buildConfigField("boolean", "ENABLE_LOGGING", "true")
         }

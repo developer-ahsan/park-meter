@@ -1,12 +1,12 @@
-# Parkapp Meter App - Internationalization Keys
+# Park45 Meter App - Internationalization Keys
 
-This file contains all the string keys and their English values for the Parkapp Meter Android app. Use this to create translations for different languages.
+This file contains all the string keys and their English values for the Park45 Meter Android app. Use this to create translations for different languages.
 
 ## App Information
 | Key | English Value |
 |-----|---------------|
-| `app_name` | Parkapp Meter |
-| `park45_meter` | Parkapp Meter |
+| `app_name` | Park45 Meter |
+| `park45_meter` | Park45 Meter |
 
 ## Navigation & Common Actions
 | Key | English Value |
@@ -307,7 +307,7 @@ To add support for a new language:
 ### Example for Spanish (`res/values-es/strings.xml`):
 ```xml
 <resources>
-    <string name="app_name">Parkapp Medidor</string>
+    <string name="app_name">Park45 Medidor</string>
     <string name="settings">Configuración</string>
     <string name="cancel">Cancelar</string>
     <!-- ... continue with all other strings -->

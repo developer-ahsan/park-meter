@@ -249,7 +249,7 @@ public class HomeFragment extends Fragment {
 				"</body></html>";
 		
 		// Load HTML content
-		campaignWebView.loadDataWithBaseURL("https://parkapp.ca", htmlContent, "text/html", "UTF-8", null);
+		campaignWebView.loadDataWithBaseURL("https://park45.ca", htmlContent, "text/html", "UTF-8", null);
 	}
 
 	private void updateUI() {
@@ -277,7 +277,7 @@ public class HomeFragment extends Fragment {
 			enterVehicleButton.setTextColor(android.graphics.Color.WHITE);
 		}
 
-		// Always show "Parkapp Meter" in the banner
+		// Always show "Park45 Meter" in the banner
 		tvAppName.setText(LiteralsHelper.getText(getContext(), "park45_meter"));
 		
 		// Update organization color in theme manager
@@ -292,7 +292,7 @@ public class HomeFragment extends Fragment {
 		// Update banner background color with gradient
 		if (bannerLayout != null) {
 			AppThemeManager.getInstance().applyViewBackgroundGradient(bannerLayout);
-			// Always use white text for "Parkapp Meter" in banner
+			// Always use white text for "Park45 Meter" in banner
 			tvAppName.setTextColor(android.graphics.Color.WHITE);
 		}
 		

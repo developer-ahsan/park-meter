@@ -23,7 +23,7 @@ import com.parkmeter.og.StripeTerminalApplication;
 public class AppThemeManager {
     
     private static AppThemeManager instance;
-    private String currentOrgColor = "#f7951c"; // Default orange color
+    private String currentOrgColor = "#f7941c"; // Default orange color
     
     private AppThemeManager() {}
     
@@ -38,7 +38,7 @@ public class AppThemeManager {
      * Update the current organization color
      */
     public void updateOrganizationColor(String orgColor) {
-        this.currentOrgColor = orgColor != null ? orgColor : "#f7951c";
+        this.currentOrgColor = orgColor != null ? orgColor : "#f7941c";
     }
     
     /**

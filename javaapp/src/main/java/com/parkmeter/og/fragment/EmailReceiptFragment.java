@@ -152,7 +152,7 @@ public class EmailReceiptFragment extends Fragment {
 
         try {
             // Create the URL with parking ID
-            String qrUrl = "https://parkapp.ca/api/downloadParking/" + parkingId;
+            String qrUrl = "https://park45.ca/api/downloadParking/" + parkingId;
             
             // Generate QR code
             QRCodeWriter writer = new QRCodeWriter();
