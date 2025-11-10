@@ -256,7 +256,7 @@
     <string name="payment_collection_failed">Échec de la collecte du paiement : %1$s</string>
 
     <!-- QR Code strings -->
-    <string name="scan_qr_code">Scanner le code QR</string>
+    <string name="scan_qr_code">SCANNEZ LE CODE QR POUR VOIR LE REÇU</string>
     <string name="scan_to_view_receipt">Scanner pour voir le reçu</string>
 
     <!-- Dynamic literals fallback -->

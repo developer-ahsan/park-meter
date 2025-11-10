@@ -217,6 +217,6 @@ transaction_id_placeholder,TXN123456789,TXN123456789
 failed_to_create_payment,Failed to create payment: %1$s,Échec de la création du paiement : %1$s
 payment_confirmation_failed,Payment confirmation failed: %1$s,Échec de la confirmation du paiement : %1$s
 payment_collection_failed,Payment collection failed: %1$s,Échec de la collecte du paiement : %1$s
-scan_qr_code,Scan QR Code,Scanner le code QR
+scan_qr_code,SCAN QR CODE TO VIEW RECEIPT,SCANNEZ LE CODE QR POUR VOIR LE REÇU
 scan_to_view_receipt,Scan to view receipt,Scanner pour voir le reçu
 btn_pay_desc,Click to pay,Cliquez pour payer

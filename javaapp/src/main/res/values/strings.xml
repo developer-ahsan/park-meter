@@ -258,7 +258,7 @@
     <string name="payment_collection_failed">Payment collection failed: %1$s</string>
 
     <!-- QR Code strings -->
-    <string name="scan_qr_code">Scan QR Code</string>
+    <string name="scan_qr_code">SCAN QR CODE TO VIEW RECEIPT</string>
     <string name="scan_to_view_receipt">Scan to view receipt</string>
 
     <!-- Dynamic literals fallback -->
