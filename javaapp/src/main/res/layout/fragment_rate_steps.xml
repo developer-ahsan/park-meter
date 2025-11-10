@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:background="@color/colorBackground" android:padding="16dp">
+
+    <!-- Content -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="vertical">
+
+        <!-- Loading Progress -->
+        <ProgressBar android:id="@+id/progress_bar" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center" android:layout_marginBottom="16dp" android:visibility="gone" />
+
+        <!-- Error Message -->
+        <TextView android:id="@+id/tv_error_message" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="16dp" android:gravity="center" android:textAppearance="@style/TextAppearance.AppCompat.Medium" android:textColor="@android:color/holo_red_dark" android:visibility="gone" tools:text="Failed to load rate steps" />
+
+        <!-- Scrollable buttons for steps -->
+        <ScrollView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="16dp" android:fillViewport="false">
+
+            <LinearLayout android:id="@+id/steps_container" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" />
+
+        </ScrollView>
+
+        <!-- Single summary card -->
+        <include android:id="@+id/summary_card" layout="@layout/item_rate_step" />
+
+    </LinearLayout>
+
+    <!-- Dynamic Color Border Card -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_pay_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp"
+        android:background="@android:color/transparent"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="2dp"
+        app:strokeColor="@color/colorPrimary"
+        app:strokeWidth="2dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/tv_pay_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@color/colorPrimary"
+                tools:text="Click to pay" />
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Bottom Select Button -->
+    <com.google.android.material.button.MaterialButton android:id="@+id/btn_select" android:layout_width="match_parent" android:layout_height="wrap_content" android:textAllCaps="false" android:textSize="@dimen/text_size_large" android:layout_marginTop="8dp" style="@style/Widget.Material3.Button" tools:text="$3.35" />
+
+</LinearLayout> 

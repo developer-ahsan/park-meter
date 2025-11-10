@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <import type="android.view.View"/>
+        <variable name="viewModel" type="com.parkmeter.og.viewmodel.TerminalViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout android:layout_width="match_parent" android:layout_height="match_parent" tools:context=".fragment.TerminalFragment">
+
+        <com.google.android.material.appbar.AppBarLayout android:id="@+id/app_bar" android:layout_width="0dp" android:layout_height="wrap_content" android:elevation="0dp" android:paddingTop="40dp" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toTopOf="@id/backdrop">
+
+            <androidx.appcompat.widget.Toolbar style="@style/Widget.Example.Toolbar" android:layout_width="match_parent" android:layout_height="?attr/actionBarSize" android:paddingStart="8dp" android:paddingLeft="8dp" android:paddingEnd="8dp" android:paddingRight="8dp" app:contentInsetStart="0dp" app:title="@string/terminal" />
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <ScrollView android:id="@+id/backdrop" style="@style/Widget.Example.Backdrop" android:layout_width="match_parent" android:layout_height="0dp" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintHorizontal_bias="0.0" app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toBottomOf="@id/app_bar">
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="8dp" android:orientation="vertical">
+
+                <!-- Connection Status Section -->
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_gravity="start" android:paddingStart="16dp" android:paddingEnd="16dp" android:text="@string/connection_status" android:textStyle="bold" android:paddingTop="40dp" />
+
+                <!-- Loading State -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="center_horizontal" android:padding="20dp" android:visibility="@{viewModel.isConnecting ? View.VISIBLE : View.GONE}">
+
+                    <ProgressBar android:layout_width="wrap_content" android:layout_height="wrap_content" android:indeterminate="true" android:layout_marginBottom="16dp" />
+
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/connecting_tap_to_pay" android:textStyle="bold" android:textSize="@dimen/text_size_large" />
+
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/tap_to_pay_requirement" android:textSize="@dimen/text_size_medium" android:alpha="0.7" android:layout_marginTop="8dp" />
+
+                </LinearLayout>
+
+                <!-- Connected State -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="center_horizontal" android:padding="20dp" android:visibility="@{viewModel.isConnected ? View.VISIBLE : View.GONE}">
+
+                    <ImageView android:layout_width="80dp" android:layout_height="80dp" android:src="@mipmap/reader" android:layout_marginBottom="16dp" />
+
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/connected" android:textStyle="bold" android:textSize="@dimen/text_size_large" android:textColor="@android:color/holo_green_dark" />
+
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@{viewModel.connectedReader.serialNumber}" android:textSize="@dimen/text_size_medium" android:layout_marginTop="8dp" />
+
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/ready_for_payments" android:textSize="@dimen/text_size_medium" android:alpha="0.7" android:layout_marginTop="4dp" />
+
+                </LinearLayout>
+
+                <!-- Disconnected State -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="center_horizontal" android:padding="20dp" android:visibility="@{!viewModel.isConnecting &amp;&amp; !viewModel.isConnected ? View.VISIBLE : View.GONE}">
+
+                    <ImageView android:layout_width="80dp" android:layout_height="80dp" android:src="@mipmap/readerempty" android:layout_marginBottom="16dp" />
+
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/not_connected" android:textStyle="bold" android:textSize="@dimen/text_size_large" android:textColor="@android:color/holo_red_dark" />
+
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@{viewModel.connectionStatus}" android:textSize="@dimen/text_size_medium" android:layout_marginTop="8dp" android:gravity="center_horizontal" />
+
+                </LinearLayout>
+
+                <!-- Connection Controls -->
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_gravity="start" android:paddingStart="16dp" android:paddingEnd="16dp" android:text="@string/connection_controls" android:textStyle="bold" android:paddingTop="40dp" />
+
+                <com.google.android.material.button.MaterialButton android:id="@+id/discover_button" style="@style/Widget.Example.Button" android:layout_width="match_parent" android:layout_height="wrap_content" app:cornerRadius="0dp" android:textAlignment="textStart" android:text="@string/restart_discovery" android:textColor="@color/colorAccent" />
+
+                <!-- Debug Section -->
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_gravity="start" android:paddingStart="16dp" android:paddingEnd="16dp" android:text="@string/debug_tools" android:textStyle="bold" android:paddingTop="40dp" />
+
+                <com.google.android.material.button.MaterialButton android:id="@+id/view_logs_button" style="@style/Widget.Example.Button" android:layout_width="match_parent" android:layout_height="wrap_content" app:cornerRadius="0dp" android:textAlignment="textStart" android:text="@string/view_logs" android:textColor="@color/colorAccent" />
+
+            </LinearLayout>
+
+        </ScrollView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

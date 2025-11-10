@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@color/colorBackground" android:fillViewport="true">
+
+<LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="24dp" android:gravity="center_horizontal">
+
+    <!-- Timer Section -->
+    <LinearLayout android:id="@+id/layout_timer_section" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center" android:layout_marginBottom="32dp" android:background="@drawable/banner_background" android:padding="16dp">
+
+        <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_check" app:tint="@android:color/white" android:layout_marginEnd="12dp" />
+
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/payment_successful" android:textColor="@android:color/white" android:textSize="@dimen/text_size_large" android:textStyle="bold" />
+
+        <TextView android:id="@+id/tv_timer" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/timer_default_60" android:textSize="@dimen/text_size_large" android:textStyle="bold" android:background="@android:color/white" android:textColor="@color/colorPrimary" android:padding="8dp" android:minWidth="48dp" android:gravity="center" />
+
+    </LinearLayout>
+
+    <!-- QR Code Section -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="center" android:layout_marginBottom="32dp">
+
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/scan_qr_code" android:textColor="@color/colorTextPrimary" android:textSize="@dimen/text_size_large" android:textStyle="bold" android:layout_marginBottom="16dp" />
+
+        <com.google.android.material.card.MaterialCardView android:layout_width="wrap_content" android:layout_height="wrap_content" app:cardCornerRadius="12dp" app:cardElevation="4dp" app:strokeWidth="2dp" app:strokeColor="@color/colorPrimary" android:padding="16dp">
+
+            <ImageView android:id="@+id/iv_qr_code" android:layout_width="200dp" android:layout_height="200dp" android:contentDescription="QR Code" android:scaleType="centerInside" android:background="@android:color/white" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/scan_to_view_receipt" android:textColor="@color/colorTextSecondary" android:textSize="@dimen/text_size_medium" android:gravity="center" android:layout_marginTop="12dp" />
+
+    </LinearLayout>
+
+    <!-- Email Receipt Icon -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="center" android:layout_marginBottom="32dp">
+
+        <ImageView android:id="@+id/iv_email_icon" android:layout_width="80dp" android:layout_height="80dp" android:src="@drawable/ic_mail" android:contentDescription="Email Receipt" app:tint="@color/colorPrimary" />
+
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/email_receipt" android:textColor="@color/colorTextPrimary" android:textSize="@dimen/text_size_xxlarge" android:textStyle="bold" android:layout_marginTop="16dp" />
+
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/email_receipt_description" android:textColor="@color/colorTextSecondary" android:textSize="@dimen/text_size_large" android:gravity="center" android:layout_marginTop="8dp" />
+
+    </LinearLayout>
+
+    <!-- Payment Details -->
+    <com.google.android.material.card.MaterialCardView android:id="@+id/card_payment_details" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="24dp" app:cardCornerRadius="12dp" app:cardElevation="4dp" app:strokeWidth="2dp" app:strokeColor="@color/colorPrimary">
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="20dp">
+
+            <!-- Amount -->
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="12dp">
+
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/amount_paid" android:textSize="@dimen/text_size_large" android:textColor="@color/colorTextSecondary" />
+
+                <TextView android:id="@+id/tv_amount_paid" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="$0.00" android:textSize="@dimen/text_size_large" android:textStyle="bold" android:textColor="@color/colorPrimary" />
+
+            </LinearLayout>
+
+            <!-- Transaction ID -->
+            <LinearLayout android:id="@+id/layout_transaction_id" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/transaction_id" android:textSize="@dimen/text_size_medium" android:textColor="@color/colorTextSecondary" />
+
+                <TextView android:id="@+id/tv_transaction_id" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/transaction_id_placeholder" android:textSize="@dimen/text_size_medium" android:textStyle="bold" android:textColor="@color/colorTextPrimary" android:gravity="end" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Email Input -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginBottom="32dp">
+
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/email_address" android:textColor="@color/colorTextPrimary" android:textSize="@dimen/text_size_large" android:textStyle="bold" android:layout_marginBottom="8dp" />
+
+        <com.google.android.material.textfield.TextInputLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="@string/enter_email_hint" app:boxStrokeColor="@color/colorPrimary" app:hintTextColor="@color/colorPrimary" style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+            <com.google.android.material.textfield.TextInputEditText android:id="@+id/et_email" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="textEmailAddress" android:textSize="@dimen/text_size_large" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+    </LinearLayout>
+
+    <!-- Action Buttons -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+
+        <!-- Send Email Button -->
+        <com.google.android.material.button.MaterialButton android:id="@+id/btn_send_email" android:layout_width="match_parent" android:layout_height="56dp" android:text="@string/send_email_receipt" android:textSize="@dimen/text_size_large" android:textStyle="bold" android:layout_marginBottom="16dp" app:cornerRadius="12dp" app:icon="@drawable/ic_mail" app:iconGravity="textStart" app:iconPadding="8dp" android:backgroundTint="@color/colorPrimary" />
+
+        <!-- Cancel Button -->
+        <com.google.android.material.button.MaterialButton android:id="@+id/btn_cancel" android:layout_width="match_parent" android:layout_height="56dp" android:text="@string/back_home" android:textSize="@dimen/text_size_large" app:cornerRadius="12dp" app:strokeWidth="0dp" style="@style/Widget.Material3.Button.TextButton" />
+
+    </LinearLayout>
+
+</LinearLayout>
+
+</ScrollView>

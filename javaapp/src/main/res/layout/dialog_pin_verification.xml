@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/pin_dialog_background" android:padding="24dp">
+
+    <!-- Header -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="center" android:layout_marginBottom="24dp">
+
+        <!-- Lock Icon -->
+        <ImageView android:id="@+id/iv_lock_icon" android:layout_width="48dp" android:layout_height="48dp" android:src="@drawable/ic_lock" android:contentDescription="Lock Icon" android:layout_marginBottom="16dp" />
+
+        <!-- Title -->
+        <TextView android:id="@+id/tv_pin_title" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/enter_zone_pin" android:textSize="@dimen/pin_title_text_size" android:textStyle="bold" android:layout_marginBottom="8dp" />
+
+        <!-- Subtitle -->
+        <TextView android:id="@+id/tv_pin_subtitle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/pin_subtitle" android:textSize="@dimen/pin_subtitle_text_size" android:gravity="center" android:layout_marginBottom="24dp" />
+
+    </LinearLayout>
+
+    <!-- PIN Input Container -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginBottom="24dp">
+
+        <!-- PIN Display -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center" android:layout_marginBottom="24dp">
+
+            <EditText android:id="@+id/et_pin_1" android:layout_width="48dp" android:layout_height="48dp" android:background="@drawable/pin_digit_background" android:textSize="@dimen/pin_digit_text_size" android:textStyle="bold" android:gravity="center" android:inputType="numberPassword" android:maxLength="1" android:layout_marginEnd="8dp" android:importantForAutofill="no" />
+
+            <EditText android:id="@+id/et_pin_2" android:layout_width="48dp" android:layout_height="48dp" android:background="@drawable/pin_digit_background" android:textSize="@dimen/pin_digit_text_size" android:textStyle="bold" android:gravity="center" android:inputType="numberPassword" android:maxLength="1" android:layout_marginEnd="8dp" android:importantForAutofill="no" />
+
+            <EditText android:id="@+id/et_pin_3" android:layout_width="48dp" android:layout_height="48dp" android:background="@drawable/pin_digit_background" android:textSize="@dimen/pin_digit_text_size" android:textStyle="bold" android:gravity="center" android:inputType="numberPassword" android:maxLength="1" android:layout_marginEnd="8dp" android:importantForAutofill="no" />
+
+            <EditText android:id="@+id/et_pin_4" android:layout_width="48dp" android:layout_height="48dp" android:background="@drawable/pin_digit_background" android:textSize="@dimen/pin_digit_text_size" android:textStyle="bold" android:gravity="center" android:inputType="numberPassword" android:maxLength="1" android:importantForAutofill="no" />
+
+        </LinearLayout>
+
+        <!-- Error Message -->
+        <TextView android:id="@+id/tv_error_message" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/incorrect_pin_message" android:textColor="#F44336" android:textSize="@dimen/pin_subtitle_text_size" android:gravity="center" android:visibility="gone" android:layout_marginBottom="16dp" />
+
+    </LinearLayout>
+
+    <!-- Action Buttons -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="end">
+
+        <com.google.android.material.button.MaterialButton android:id="@+id/btn_cancel" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/cancel" android:textSize="@dimen/pin_button_text_size" android:padding="12dp" android:layout_marginEnd="12dp" android:backgroundTint="@android:color/transparent" app:strokeWidth="1dp" app:cornerRadius="8dp" style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
+        <com.google.android.material.button.MaterialButton android:id="@+id/btn_verify" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/verify" android:textSize="@dimen/pin_button_text_size" android:textStyle="bold" android:padding="12dp" android:textColor="@android:color/white" app:cornerRadius="8dp" android:enabled="false" />
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@color/colorBackground" android:orientation="vertical" android:fitsSystemWindows="true">
+
+    <!-- Top Bar with Language Dropdown and Settings Icon -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:padding="16dp" android:layout_marginTop="24dp">
+
+        <!-- Language Dropdown -->
+        <LinearLayout android:id="@+id/language_dropdown" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="horizontal" android:gravity="start|center_vertical" android:background="?android:attr/selectableItemBackgroundBorderless" android:clickable="true" android:focusable="true" android:padding="8dp">
+
+            <ImageView android:id="@+id/language_flag" android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_flag_english" android:contentDescription="@string/language_flag_description" />
+
+            <TextView android:id="@+id/language_text" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="English" android:textColor="@color/colorPrimary" android:textSize="16sp" android:textStyle="bold" android:layout_marginStart="8dp" android:layout_marginEnd="4dp" />
+
+            <ImageView android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_dropdown_arrow" android:contentDescription="@string/dropdown_arrow_description" />
+
+        </LinearLayout>
+
+        <ImageView android:id="@+id/settings_icon" android:layout_width="48dp" android:layout_height="48dp" android:src="@drawable/ic_settings" app:tint="@color/colorPrimary" android:contentDescription="@string/settings_description" android:clickable="true" android:focusable="true" android:background="?android:attr/selectableItemBackgroundBorderless" android:padding="8dp" />
+
+    </LinearLayout>
+
+    <ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:padding="20dp">
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+
+            <!-- App Logo in Bordered Card -->            <!-- App Logo in Bordered Card -->
+            <com.google.android.material.card.MaterialCardView android:id="@+id/card_app_logo" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_gravity="center" app:cardCornerRadius="16dp" app:cardElevation="8dp" app:useCompatPadding="true" app:strokeWidth="2dp" app:strokeColor="@color/colorPrimary" android:layout_marginBottom="24dp">
+
+                <FrameLayout android:layout_width="180dp" android:layout_height="180dp" android:padding="8dp" android:layout_gravity="center_horizontal">
+
+                    <ImageView android:id="@+id/app_logo" android:layout_width="match_parent" android:layout_height="match_parent" android:contentDescription="@string/app_logo_description" />
+
+                    <com.google.android.material.progressindicator.CircularProgressIndicator android:id="@+id/app_logo_loader" android:layout_width="40dp" android:layout_height="40dp" android:layout_gravity="center" app:indicatorSize="40dp" app:trackThickness="6dp" android:visibility="gone" />
+
+                </FrameLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Banner -->
+            <LinearLayout android:id="@+id/banner_layout" android:layout_width="match_parent" android:layout_height="wrap_content" android:background="@drawable/banner_background" android:orientation="vertical" android:padding="24dp" android:layout_marginBottom="24dp" android:elevation="8dp">
+
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/welcome_to" android:textColor="@android:color/white" android:textSize="@dimen/text_size_large" android:textStyle="bold" android:gravity="center" />
+
+                <TextView android:id="@+id/tv_app_name" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/park45_meter" android:textColor="@android:color/white" android:textSize="@dimen/text_size_title" android:textStyle="bold" android:gravity="center" android:layout_marginTop="4dp" />
+
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/payment_processing_system" android:textColor="@android:color/white" android:textSize="@dimen/text_size_medium" android:gravity="center" android:layout_marginTop="8dp" />
+
+            </LinearLayout>
+
+            <!-- Campaign Card -->
+            <com.google.android.material.card.MaterialCardView android:id="@+id/campaign_card" android:layout_width="match_parent" android:layout_height="wrap_content" app:cardCornerRadius="16dp" app:cardElevation="8dp" app:useCompatPadding="true" app:strokeWidth="2dp" app:strokeColor="@color/colorPrimary" android:layout_marginBottom="24dp" android:visibility="gone">
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="20dp">
+
+                    <!-- Campaign Loader -->
+                    <com.google.android.material.progressindicator.CircularProgressIndicator android:id="@+id/campaign_loader" android:layout_width="40dp" android:layout_height="40dp" android:layout_gravity="center" app:indicatorSize="40dp" app:trackThickness="6dp" android:visibility="visible" />
+
+                    <!-- Campaign Content -->
+                    <WebView android:id="@+id/campaign_webview" android:layout_width="match_parent" android:layout_height="wrap_content" android:background="@android:color/transparent" android:visibility="gone" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+
+            <!-- Primary Action Card -->
+            <com.google.android.material.card.MaterialCardView android:id="@+id/card_primary_action" android:layout_width="match_parent" android:layout_height="wrap_content" app:cardCornerRadius="16dp" app:cardElevation="10dp" app:useCompatPadding="true" app:strokeWidth="2dp" app:strokeColor="@color/colorPrimary" android:layout_marginBottom="16dp">
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="20dp">
+
+                    <!-- Vehicle Number Button -->
+                    <com.google.android.material.button.MaterialButton android:id="@+id/btn_enter_vehicle_number" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/enter_license_plate_button" android:textSize="@dimen/text_size_large" android:textStyle="bold" android:padding="16dp" android:backgroundTint="@color/colorPrimary" android:textColor="@android:color/white" app:icon="@drawable/ic_vehicle" app:iconGravity="textStart" app:iconPadding="12dp" app:cornerRadius="12dp" android:elevation="4dp" />
+
+                    <TextView android:id="@+id/tv_selected_zone_display" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/no_zone_selected" android:textColor="@color/colorTextSecondary" android:textSize="@dimen/text_size_medium" android:gravity="center" android:layout_marginTop="12dp" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout> 

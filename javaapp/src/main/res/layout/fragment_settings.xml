@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@color/colorBackground" android:orientation="vertical" android:padding="24dp">
+
+    <!-- Top Bar with Back Icon -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="start|center_vertical" android:layout_marginBottom="32dp">
+
+        <ImageView android:id="@+id/back_icon" android:layout_width="48dp" android:layout_height="48dp" android:src="@drawable/ic_right_arrow" android:rotation="180" app:tint="@color/colorPrimary" android:contentDescription="@string/back_icon_description" android:clickable="true" android:focusable="true" android:background="?android:attr/selectableItemBackgroundBorderless"/>
+
+        <TextView android:id="@+id/tv_settings_title" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/settings" android:textColor="@color/colorPrimary" android:textSize="@dimen/text_size_xlarge" android:textStyle="bold" android:gravity="center" />
+
+        <View android:layout_width="48dp" android:layout_height="48dp" />
+
+
+    </LinearLayout>
+
+    <ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="24dp">
+
+
+            <!-- Organization Details Card -->
+            <com.google.android.material.card.MaterialCardView android:id="@+id/card_org_details" android:layout_width="match_parent" android:layout_height="wrap_content" app:cardCornerRadius="16dp" app:cardElevation="10dp" app:useCompatPadding="true" app:strokeWidth="2dp" app:strokeColor="@color/colorPrimary" android:layout_marginBottom="24dp">
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="24dp">
+
+                    <!-- Organization Logo -->
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="center" android:layout_marginBottom="20dp">
+
+                        <FrameLayout android:layout_width="150dp" android:layout_height="150dp">
+
+                            <ImageView android:id="@+id/organization_logo" android:layout_width="match_parent" android:layout_height="match_parent" android:contentDescription="@string/app_logo_description" />
+
+                            <com.google.android.material.progressindicator.CircularProgressIndicator android:id="@+id/organization_logo_loader" android:layout_width="36dp" android:layout_height="36dp" android:layout_gravity="center" app:indicatorSize="36dp" app:trackThickness="6dp" android:visibility="gone" />
+
+                        </FrameLayout>
+
+                    </LinearLayout>
+
+                    <TextView android:id="@+id/tv_org_details_title" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/organization_details" android:textColor="@color/colorPrimary" android:textSize="@dimen/text_size_xlarge" android:textStyle="bold" android:layout_marginBottom="20dp" />
+
+                    <!-- Organization Name -->
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="16dp">
+
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/organization_label" android:textColor="@color/colorTextSecondary" android:textSize="@dimen/text_size_large" android:layout_marginEnd="12dp" />
+
+                        <TextView android:id="@+id/tv_organization_name" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/park_meter" android:textColor="@color/colorTextPrimary" android:textSize="@dimen/text_size_large" android:textStyle="bold" />
+
+                    </LinearLayout>
+
+                    <!-- Zone Name -->
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="16dp">
+
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/zone_label" android:textColor="@color/colorTextSecondary" android:textSize="@dimen/text_size_large" android:layout_marginEnd="12dp" />
+
+                        <TextView android:id="@+id/tv_zone_name" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/not_selected" android:textColor="@color/colorTextPrimary" android:textSize="@dimen/text_size_large" android:textStyle="bold" />
+
+                    </LinearLayout>
+
+                    <!-- City Name -->
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="24dp">
+
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/city_label" android:textColor="@color/colorTextSecondary" android:textSize="@dimen/text_size_large" android:layout_marginEnd="12dp" />
+
+                        <TextView android:id="@+id/tv_city_name" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/not_selected" android:textColor="@color/colorTextPrimary" android:textSize="@dimen/text_size_large" android:textStyle="bold" />
+
+                    </LinearLayout>
+
+                    <!-- Action Buttons -->
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+
+                        <com.google.android.material.button.MaterialButton android:id="@+id/btn_change_zone" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/change_zone" android:textSize="@dimen/button_text_size" android:textStyle="bold" android:padding="16dp" android:backgroundTint="@color/colorPrimary" android:textColor="@android:color/white" app:icon="@drawable/ic_vehicle" app:iconGravity="textStart" app:iconPadding="12dp" app:cornerRadius="12dp" android:elevation="4dp" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout> 

@@ -1,0 +1,265 @@
+<resources>
+    <!-- Existing strings -->
+    <string name="amount">MONTANT</string>
+    <string name="app_name">Parkapp Compteur</string>
+    <string name="cancel">Annuler</string>
+    <string name="back_home">Retour à la maison</string>
+    <string name="check_for_update">Vérifier les mises à jour</string>
+    <string name="checking_for_update">Vérification des mises à jour...</string>
+    <string name="collect_card_payment">Collecter le paiement par carte</string>
+    <string name="collect_payment">Collecter le paiement</string>
+    <string name="collect_payment_description">Collecter un paiement par carte en utilisant une carte de test Stripe physique et un lecteur de carte</string>
+    <string name="common_workflows">WORKFLOWS COURANTS</string>
+    <string name="connecting">Connexion...</string>
+    <string name="currency">DEVISE</string>
+    <string name="current_version">VERSION ACTUELLE</string>
+    <string name="default_amount_int">100</string>
+    <string name="default_amount_string">1,00 $</string>
+    <string name="disconnect">Déconnecter</string>
+    <string name="discovery">Découverte</string>
+    <string name="discover_readers">Découvrir les lecteurs</string>
+    <string name="discovery_method">MÉTHODE DE DÉCOUVERTE</string>
+    <string name="done">Terminé</string>
+    <string name="empty_reader">Lecteur vide</string>
+    <string name="event_log">JOURNAL D\'ÉVÉNEMENTS</string>
+    <string name="install_explanation">Version %1$s disponible. Le lecteur deviendra non réactif jusqu\'à ce que la mise à jour soit terminée. Temps de mise à jour estimé : %2$s.</string>
+    <string name="install_update">Installer la mise à jour</string>
+    <string name="installation_in_progress">Le lecteur deviendra temporairement non réactif. Ne quittez pas cette page et gardez le lecteur à portée et sous tension jusqu\'à ce que la mise à jour soit terminée.</string>
+    <string name="nearby_readers">LECTEURS À PROXIMITÉ</string>
+    <string name="no_reader">Aucun lecteur connecté</string>
+    <string name="no_update_available">Aucune mise à jour disponible</string>
+    <string name="reader">Lecteur</string>
+    <string name="reader_connection">CONNEXION DU LECTEUR</string>
+    <string name="reader_description">%1$s %2$s</string>
+    <string name="save_card">Sauvegarder la carte</string>
+    <string name="simulated">Simulé</string>
+    <string name="simulation_explanation">Le SDK permet de simuler le comportement sans utiliser de matériel physique. Cela facilite les tests rapides de votre intégration de bout en bout, de la connexion d\'un lecteur à la prise de paiements.</string>
+    <string name="terminal">Terminal</string>
+    <string name="testing">Test</string>
+    <string name="update_complete">Mise à jour terminée</string>
+    <string name="update_explanation">Vérifier si une mise à jour logicielle du lecteur est disponible.</string>
+    <string name="update_in_progress">Mise à jour en cours</string>
+    <string name="update_progress">Progression de la mise à jour : %1$.1f%%</string>
+    <string name="update_reader">Mettre à jour le lecteur</string>
+    <string name="update_reader_software">Mettre à jour le logiciel du lecteur</string>
+    <string name="usd">USD</string>
+    <string name="skip_tipping">Passer le pourboire</string>
+    <string name="tipping">POURBOIRE</string>
+    <string name="skip_tipping_description">Doit avoir le pourboire sur lecteur configuré pour avoir un effet.</string>
+    <string name="payment_method">OPTIONS DE MÉTHODE DE PAIEMENT</string>
+    <string name="request_extended_auth">Demander une autorisation étendue</string>
+    <string name="request_incremental_auth">Demander une autorisation incrémentale</string>
+    <string name="offline">HORS LIGNE</string>
+    <string name="offline_behavior">Configuration hors ligne</string>
+    <string name="offline_behavior_default">par défaut</string>
+    <string name="offline_behavior_prefer_online">Préférer en ligne</string>
+    <string name="offline_behavior_require_online">Exiger en ligne</string>
+    <string name="offline_behavior_force_offline">Forcer hors ligne</string>
+    <string name="a11y_terminal_offline">Le terminal est hors ligne</string>
+    <string name="a11y_terminal_online">Le terminal est en ligne</string>
+    <string name="a11y_terminal_unknown">Le statut de connexion du terminal est inconnu</string>
+    <string name="view_offline_logs">Afficher les journaux de paiement hors ligne stockés</string>
+    <string name="offline_logs">Journaux hors ligne</string>
+    <string name="select_rate">Sélectionner le tarif</string>
+    <string name="back">Retour</string>
+    <string name="retry">Réessayer</string>
+    <string name="select">Sélectionner</string>
+    <string name="rate_steps">Étapes de tarification</string>
+    <string name="payment_details">Détails du paiement</string>
+    <string name="discover_reader">Découvrir le lecteur</string>
+    <string name="change_reader">Changer de lecteur</string>
+    <string name="ready_to_connect_reader">Prêt à connecter le lecteur</string>
+    <string name="discovering_readers">Découverte des lecteurs...</string>
+    <string name="reader_connected">Lecteur connecté</string>
+    <string name="no_reader_connected">Aucun lecteur connecté</string>
+    <string name="please_connect_reader">Veuillez d\'abord connecter un lecteur</string>
+    <string name="initiating_payment">Initialisation du paiement...</string>
+    <string name="connected">Connecté</string>
+    <string name="organization">Organisation</string>
+    <string name="zone">Zone</string>
+    <string name="vehicle">Véhicule</string>
+    <string name="rate">Tarif</string>
+    <string name="duration">Durée</string>
+    <string name="total_amount">Montant total</string>
+
+    <!-- Settings Fragment -->
+    <string name="settings">Paramètres</string>
+    <string name="organization_details">Détails de l\'organisation</string>
+    <string name="organization_label">Organisation :</string>
+    <string name="park_meter">Compteur de stationnement</string>
+    <string name="zone_label">Zone :</string>
+    <string name="city_label">Ville :</string>
+    <string name="not_selected">Non sélectionné</string>
+    <string name="change_zone">Changer de zone</string>
+
+    <!-- PIN Verification Dialog -->
+    <string name="enter_zone_pin">Entrer le code PIN de la zone</string>
+    <string name="pin_subtitle">Veuillez entrer le code PIN à 4 chiffres pour accéder aux paramètres de la zone</string>
+    <string name="incorrect_pin_message">Code PIN incorrect. Veuillez réessayer.</string>
+    <string name="verify">Vérifier</string>
+    
+    <!-- Language Dropdown -->
+    <string name="language_flag_description">Drapeau de langue</string>
+    <string name="dropdown_arrow_description">Flèche déroulante</string>
+    <string name="english">Anglais</string>
+    <string name="french">Français</string>
+    <string name="select_language">Sélectionner la langue</string>
+
+    <!-- Overlay Loader -->
+    <string name="processing">Traitement...</string>
+    <string name="please_wait">Veuillez patienter...</string>
+
+    <!-- Terminal Fragment -->
+    <string name="connection_status">Statut de connexion</string>
+    <string name="connecting_tap_to_pay">Connexion au lecteur Tap to Pay...</string>
+    <string name="tap_to_pay_requirement">Veuillez vous assurer que votre appareil prend en charge Tap to Pay</string>
+    <string name="ready_for_payments">Prêt pour les paiements</string>
+    <string name="not_connected">Non connecté</string>
+    <string name="connection_controls">Contrôles de connexion</string>
+    <string name="restart_discovery">Redémarrer la découverte</string>
+    <string name="debug_tools">Outils de débogage</string>
+    <string name="view_logs">Afficher les journaux</string>
+
+    <!-- Payment Enhanced Fragment -->
+    <string name="organization_name">Nom de l\'organisation</string>
+    <string name="zone_name">Nom de la zone</string>
+    <string name="vehicle_number">Numéro de véhicule</string>
+    <string name="rate_name">Nom du tarif</string>
+    <string name="time_description">Description du temps</string>
+    <string name="connected_reader_name">Connecté : Nom du lecteur</string>
+    <string name="collect_payment_button">Collecter le paiement</string>
+
+    <!-- Vehicle Number Fragment -->
+    <string name="license_plate">Plaque d\'immatriculation</string>
+    <string name="enter_license_plate_details">Entrer les détails de la plaque d\'immatriculation</string>
+    <string name="license_plate_label">Plaque d\'immatriculation</string>
+    <string name="license_plate_format">Format : Jusqu\'à 8 caractères. Lettres majuscules et chiffres uniquement (ex. : ABCD, 1234, AB12, FF1234)</string>
+    <string name="next">Suivant</string>
+    <string name="enter_license_plate_hint">Entrer la plaque d\'immatriculation</string>
+
+    <!-- Email Receipt Fragment -->
+    <string name="payment_successful">Paiement réussi !</string>
+    <string name="email_receipt">Reçu par email</string>
+    <string name="email_receipt_description">Entrez votre adresse email pour recevoir un reçu</string>
+    <string name="amount_paid">Montant payé :</string>
+    <string name="transaction_id">ID de transaction :</string>
+    <string name="email_address">Adresse email</string>
+    <string name="send_email_receipt">Envoyer le reçu par email</string>
+    <string name="enter_email_hint">Entrez votre adresse email</string>
+    <string name="sending">Envoi...</string>
+    <string name="timer_default">0</string>
+    <string name="timer_default_60">60</string>
+
+    <!-- Log Viewer Fragment -->
+    <string name="log_viewer">📋 Visualiseur de journaux</string>
+    <string name="home">🏠 Accueil</string>
+    <string name="search_icon">🔍</string>
+    <string name="refresh">🔄 Actualiser</string>
+    <string name="filter_discovery">🔍 Filtrer la découverte</string>
+    <string name="clear">🗑️ Effacer</string>
+    <string name="search_logs_hint">Rechercher dans les journaux...</string>
+    <string name="tips">💡 Conseils :</string>
+    <string name="tip_filter_discovery">• Utilisez \'Filtrer la découverte\' pour voir uniquement les journaux liés à la découverte</string>
+    <string name="tip_search_bar">• Utilisez la barre de recherche pour trouver des erreurs ou termes spécifiques</string>
+    <string name="tip_copy_text">• Appuyez et maintenez pour sélectionner/copier le texte du journal</string>
+    <string name="tip_refresh">• Actualisez pour obtenir les derniers journaux après les tests</string>
+
+    <!-- Zones Fragment -->
+    <string name="select_zone">Sélectionner la zone</string>
+    <string name="loading_zones">Chargement des zones...</string>
+    <string name="search_zones_hint">Rechercher des zones...</string>
+
+    <!-- Toast Messages -->
+    <string name="payment_timeout">Délai d\'attente du paiement</string>
+    <string name="payment_captured_successfully">Paiement capturé avec succès</string>
+    <string name="capture_failed">Échec de la capture : %1$s</string>
+    <string name="payment_cancelled">Paiement annulé</string>
+    <string name="please_select_zone_first">Veuillez d\'abord sélectionner une zone</string>
+    <string name="location_permissions_required">Les permissions de localisation sont requises pour la découverte de lecteur</string>
+    <string name="missing_required_data">Données requises manquantes pour la vérification de disponibilité</string>
+    <string name="network_error_check_connection">Erreur réseau. Veuillez vérifier votre connexion.</string>
+    <string name="please_enter_license_plate">Veuillez entrer un numéro de plaque d\'immatriculation</string>
+    <string name="invalid_license_plate_format">Format invalide. Utilisez uniquement 1-8 lettres majuscules et chiffres.</string>
+    <string name="failed_to_process_parking">Échec du traitement du stationnement. Veuillez réessayer.</string>
+    <string name="network_error_try_again">Erreur réseau. Veuillez réessayer.</string>
+    <string name="please_enter_email">Veuillez entrer votre adresse email</string>
+    <string name="please_enter_valid_email">Veuillez entrer une adresse email valide</string>
+    <string name="parking_id_not_found">ID de stationnement non trouvé</string>
+    <string name="receipt_sent_successfully">Reçu envoyé avec succès !</string>
+    <string name="failed_to_send_receipt">Échec de l\'envoi du reçu. Veuillez réessayer.</string>
+
+    <!-- Button Text -->
+    <string name="checking_availability">Vérification de la disponibilité...</string>
+    <string name="retry_payment">Réessayer le paiement</string>
+
+    <!-- Status Messages -->
+    <string name="unknown_city">Ville inconnue</string>
+    <string name="code_label">Code : %1$s</string>
+    <string name="na">N/A</string>
+    <string name="enter_license_plate_button">Entrer la plaque d\'immatriculation</string>
+    <string name="no_zone_selected">Aucune zone sélectionnée</string>
+    <string name="park45_meter">Parkapp Compteur</string>
+
+    <!-- Content Descriptions -->
+    <string name="back_icon_description">Retour</string>
+    <string name="app_logo_description">Logo de l\'application</string>
+
+    <!-- Additional missing strings -->
+    <string name="welcome_to">Bienvenue à</string>
+    <string name="payment_processing_system">Système de traitement des paiements</string>
+    <string name="failed_to_load_zones">Échec du chargement des zones</string>
+    <string name="your_parking_session_will_end">Votre session de stationnement se terminera :</string>
+    <string name="service_fee">Frais de service :</string>
+    <string name="total">Total :</string>
+    <string name="logs">📋 Journaux</string>
+    <string name="vehicle_label">Véhicule :</string>
+    <string name="selected_zone">Zone sélectionnée :</string>
+    <string name="log_viewer_header">=== Visualiseur de journaux ===</string>
+    <string name="timestamp_label">Horodatage :</string>
+    <string name="total_logs_label">Total des journaux :</string>
+    <string name="showing_last_label">affichage des derniers</string>
+    <string name="filter_label">Filtre :</string>
+    <string name="discovery_only">Découverte uniquement</string>
+    <string name="all_logs">Tous les journaux</string>
+    <string name="search_label">Recherche :</string>
+    <string name="log_separator">==========================================</string>
+    <string name="settings_description">Paramètres</string>
+    <string name="lock_icon_description">Icône de verrouillage</string>
+    <string name="zone_icon_description">Icône de zone</string>
+    <string name="selected_description">Sélectionné</string>
+
+    <!-- Error messages that need externalization -->
+    <string name="no_rates_available">Aucun tarif disponible pour cette zone et ce numéro de véhicule</string>
+    <string name="failed_to_load_rates">Échec du chargement des tarifs</string>
+    <string name="authentication_failed">Échec de l\'authentification. Veuillez vérifier vos identifiants.</string>
+    <string name="zone_or_vehicle_not_found">Zone ou véhicule non trouvé</string>
+    <string name="server_error_try_later">Erreur serveur. Veuillez réessayer plus tard.</string>
+    <string name="no_rate_steps_available">Aucune étape de tarification disponible pour ce tarif</string>
+    <string name="failed_to_load_rate_steps">Échec du chargement des étapes de tarification</string>
+    <string name="rate_steps_not_found">Étapes de tarification non trouvées</string>
+    <string name="error_loading_logs">Erreur lors du chargement des journaux : %1$s</string>
+    <string name="show_all">Afficher tout</string>
+    <string name="filter_discovery_button">Filtrer la découverte</string>
+
+    <!-- Layout placeholder strings -->
+    <string name="zone_name_placeholder">Nom de la zone</string>
+    <string name="city_name_placeholder">Nom de la ville</string>
+    <string name="zone_code_placeholder">Code de zone</string>
+    <string name="vehicle_number_placeholder">Numéro de véhicule</string>
+    <string name="rate_name_placeholder">Nom du tarif</string>
+    <string name="time_description_placeholder">Description du temps</string>
+    <string name="transaction_id_placeholder">TXN123456789</string>
+
+    <!-- Payment error messages -->
+    <string name="failed_to_create_payment">Échec de la création du paiement : %1$s</string>
+    <string name="payment_confirmation_failed">Échec de la confirmation du paiement : %1$s</string>
+    <string name="payment_collection_failed">Échec de la collecte du paiement : %1$s</string>
+
+    <!-- QR Code strings -->
+    <string name="scan_qr_code">Scanner le code QR</string>
+    <string name="scan_to_view_receipt">Scanner pour voir le reçu</string>
+
+    <!-- Dynamic literals fallback -->
+    <string name="btn_pay_desc">Cliquez pour payer</string>
+
+</resources>

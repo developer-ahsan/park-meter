@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:padding="16dp">
+
+    <!-- Header -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="16dp">
+
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/log_viewer" android:textSize="@dimen/text_size_xlarge" android:textStyle="bold" android:textColor="@android:color/black" />
+
+        <Button android:id="@+id/home_button" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/home" android:textSize="@dimen/text_size_medium" android:padding="8dp" />
+
+    </LinearLayout>
+
+    <!-- Search Bar -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="8dp">
+
+        <EditText android:id="@+id/search_edit_text" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:hint="@string/search_logs_hint" android:textSize="@dimen/text_size_medium" android:padding="8dp" android:background="@android:color/white" android:layout_marginEnd="4dp" />
+
+        <Button android:id="@+id/search_button" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/search_icon" android:textSize="@dimen/text_size_medium" android:padding="8dp" />
+
+    </LinearLayout>
+
+    <!-- Control Buttons -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="8dp">
+
+        <Button android:id="@+id/refresh_button" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/refresh" android:textSize="@dimen/text_size_medium" android:layout_marginEnd="4dp" />
+
+        <Button android:id="@+id/filter_button" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/filter_discovery" android:textSize="@dimen/text_size_medium" android:layout_marginStart="4dp" android:layout_marginEnd="4dp" />
+
+        <Button android:id="@+id/clear_button" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/clear" android:textSize="@dimen/text_size_medium" android:layout_marginStart="4dp" />
+
+    </LinearLayout>
+
+    <!-- Log Display -->
+    <ScrollView android:id="@+id/log_scroll_view" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:background="@android:color/black" android:padding="8dp">
+
+        <TextView android:id="@+id/log_text_view" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@android:color/white" android:textSize="@dimen/text_size_small" android:fontFamily="monospace" android:textIsSelectable="true" android:scrollbars="vertical" />
+
+    </ScrollView>
+
+    <!-- Footer Info -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginTop="8dp" android:background="#D3D3D3" android:padding="8dp">
+
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/tips" android:textStyle="bold" android:textSize="@dimen/text_size_medium" />
+
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/tip_filter_discovery" android:textSize="@dimen/text_size_small" />
+
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/tip_search_bar" android:textSize="@dimen/text_size_small" />
+
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/tip_copy_text" android:textSize="@dimen/text_size_small" />
+
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/tip_refresh" android:textSize="@dimen/text_size_small" />
+
+    </LinearLayout>
+
+</LinearLayout> 

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:background="@color/colorBackground" android:padding="24dp">
+
+    <!-- Header -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="32dp">
+
+        <ImageView android:id="@+id/btn_back" android:layout_width="48dp" android:layout_height="48dp" android:src="@drawable/ic_right_arrow" android:rotation="180" android:background="?attr/selectableItemBackgroundBorderless" android:contentDescription="Back" />
+
+        <TextView android:id="@+id/tv_title" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/license_plate" android:textColor="@color/colorPrimary" android:textSize="@dimen/text_size_xlarge" android:textStyle="bold" android:gravity="center" />
+
+        <View android:layout_width="48dp" android:layout_height="48dp" />
+
+    </LinearLayout>
+
+    <!-- Vehicle Icon -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="center" android:layout_marginBottom="32dp">
+
+        <ImageView android:id="@+id/vehicle_icon" android:layout_width="80dp" android:layout_height="80dp" android:src="@drawable/ic_vehicle" android:contentDescription="Vehicle Icon" app:tint="@color/colorPrimary" />
+
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/enter_license_plate_details" android:textColor="@color/colorTextPrimary" android:textSize="@dimen/text_size_large" android:textStyle="bold" android:layout_marginTop="16dp" />
+
+    </LinearLayout>
+
+    <!-- Vehicle Number Input -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginBottom="24dp">
+
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/license_plate_label" android:textColor="@color/colorTextPrimary" android:textSize="@dimen/text_size_large" android:textStyle="bold" android:layout_marginBottom="8dp" />
+
+        <com.google.android.material.textfield.TextInputLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="@string/enter_license_plate_hint" app:boxStrokeColor="@color/colorPrimary" app:hintTextColor="@color/colorPrimary" style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+            <com.google.android.material.textfield.TextInputEditText android:id="@+id/et_vehicle_number" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="textCapCharacters" android:maxLength="8" android:textSize="@dimen/text_size_large" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/license_plate_format" android:textColor="@color/colorTextSecondary" android:textSize="@dimen/text_size_medium" android:layout_marginTop="4dp" />
+
+    </LinearLayout>
+
+    <!-- Next Button -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginTop="16dp">
+
+        <com.google.android.material.button.MaterialButton android:id="@+id/btn_next" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/next" android:textSize="@dimen/text_size_large" android:textStyle="bold" android:padding="16dp" android:backgroundTint="@color/colorPrimary" android:textColor="@android:color/white" app:cornerRadius="12dp" android:elevation="4dp" />
+
+    </LinearLayout>
+
+</LinearLayout> 

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Original dimension -->
+    <dimen name="terminal_offline_indicator_pulse_width" tools:ignore="MissingDefaultResource">1dp</dimen>
+
+    <!-- Text Sizes - Increased by 2sp from original values -->
+    <dimen name="text_size_small">14sp</dimen>    <!-- was ~12sp -->
+    <dimen name="text_size_medium">16sp</dimen>    <!-- was ~14sp -->
+    <dimen name="text_size_large">18sp</dimen>    <!-- was ~16sp -->
+    <dimen name="text_size_xlarge">22sp</dimen>    <!-- was ~20sp -->
+    <dimen name="text_size_xxlarge">26sp</dimen>    <!-- was ~24sp -->
+    <dimen name="text_size_title">30sp</dimen>    <!-- was ~28sp -->
+    <dimen name="text_size_headline">34sp</dimen>    <!-- was ~32sp -->
+
+    <!-- Button Text Sizes -->
+    <dimen name="button_text_size">18sp</dimen>    <!-- was ~16sp -->
+    <dimen name="button_text_size_large">22sp</dimen>    <!-- was ~20sp -->
+
+    <!-- Input Text Sizes -->
+    <dimen name="input_text_size">18sp</dimen>    <!-- was ~16sp -->
+    <dimen name="input_text_size_large">20sp</dimen>    <!-- was ~18sp -->
+
+    <!-- Label Text Sizes -->
+    <dimen name="label_text_size">16sp</dimen>    <!-- was ~14sp -->
+    <dimen name="label_text_size_large">18sp</dimen>    <!-- was ~16sp -->
+
+    <!-- PIN Dialog specific sizes -->
+    <dimen name="pin_digit_text_size">20sp</dimen>    <!-- was ~18sp -->
+    <dimen name="pin_title_text_size">22sp</dimen>    <!-- was ~20sp -->
+    <dimen name="pin_subtitle_text_size">16sp</dimen>    <!-- was ~14sp -->
+    <dimen name="pin_button_text_size">16sp</dimen>    <!-- was ~14sp -->
+
+    <!-- Spacing and padding -->
+    <dimen name="spacing_small">16dp</dimen>    <!-- was ~8dp -->
+    <dimen name="spacing_medium">24dp</dimen>    <!-- was ~12dp -->
+    <dimen name="spacing_large">32dp</dimen>    <!-- was ~16dp -->
+    <dimen name="spacing_xlarge">48dp</dimen>    <!-- was ~24dp -->
+</resources>

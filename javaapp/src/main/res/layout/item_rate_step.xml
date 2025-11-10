@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent" android:layout_height="wrap_content" app:cardCornerRadius="12dp" app:cardElevation="4dp" app:strokeWidth="1dp" app:strokeColor="?android:attr/colorPrimary">
+
+    <ScrollView android:layout_width="match_parent" android:layout_height="wrap_content" android:fillViewport="true" android:maxHeight="400dp">
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
+
+            <!-- Current time (from API) -->
+            <TextView android:id="@+id/tv_current_time" android:layout_width="match_parent" android:layout_height="wrap_content" android:textAppearance="@style/TextAppearance.AppCompat.Medium" android:textColor="?android:attr/textColorSecondary" android:layout_marginBottom="12dp" tools:text="August 18th 2025, 06:01 am" />
+
+            <!-- End time section header with day pill -->
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="8dp">
+
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/your_parking_session_will_end" android:textAppearance="@style/TextAppearance.AppCompat.Medium" android:textColor="?android:attr/textColorSecondary" />
+
+                <TextView android:id="@+id/tv_day" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textAppearance="@style/TextAppearance.AppCompat.Medium" android:textColor="@android:color/white" android:background="@drawable/time_badge_background" android:paddingHorizontal="12dp" android:paddingVertical="4dp" tools:text="Today" />
+
+            </LinearLayout>
+
+            <!-- Big end time (derived from time desc) -->
+            <TextView android:id="@+id/tv_end_time" android:layout_width="match_parent" android:layout_height="wrap_content" android:textAppearance="@style/TextAppearance.AppCompat.Large" android:textColor="?android:attr/textColorPrimary" android:textStyle="bold" android:layout_marginBottom="16dp" tools:text="06:31 am" />
+
+            <!-- Price Details -->
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginBottom="16dp">
+
+                <!-- Rate Row -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="4dp">
+
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/rate" android:textAppearance="@style/TextAppearance.AppCompat.Medium" android:textColor="?android:attr/textColorSecondary" />
+
+                    <TextView android:id="@+id/tv_rate" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textAppearance="@style/TextAppearance.AppCompat.Medium" android:textColor="?android:attr/textColorPrimary" android:textStyle="bold" tools:text="$3.00" />
+
+                </LinearLayout>
+
+                <!-- Service Fee Row -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="4dp">
+
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/service_fee" android:textAppearance="@style/TextAppearance.AppCompat.Medium" android:textColor="?android:attr/textColorSecondary" />
+
+                    <TextView android:id="@+id/tv_service_fee" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textAppearance="@style/TextAppearance.AppCompat.Medium" android:textColor="?android:attr/textColorPrimary" tools:text="$0.35" />
+
+                </LinearLayout>
+
+                <!-- Total Row -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:background="@drawable/total_background" android:padding="8dp">
+
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/total" android:textAppearance="@style/TextAppearance.AppCompat.Large" android:textColor="@android:color/white" android:textStyle="bold" />
+
+                    <TextView android:id="@+id/tv_total" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textAppearance="@style/TextAppearance.AppCompat.Large" android:textColor="@android:color/white" android:textStyle="bold" tools:text="$3.35" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</com.google.android.material.card.MaterialCardView> 

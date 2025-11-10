@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "788441488018",
+    "project_id": "parking-meter-og",
+    "storage_bucket": "parking-meter-og.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:788441488018:android:46ba676b06bc58b59c244b",
+        "android_client_info": {
+          "package_name": "com.parkmeter.og"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDoWnFTegHeSo5BRCJGQHmyLuXYvmF292E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

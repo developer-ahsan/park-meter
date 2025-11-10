@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:background="@color/colorBackground" android:padding="24dp">
+
+    <!-- Header -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="32dp">
+
+        <ImageView android:id="@+id/btn_back" android:layout_width="48dp" android:layout_height="48dp" android:src="@drawable/ic_right_arrow" android:rotation="180" android:background="?attr/selectableItemBackgroundBorderless" android:contentDescription="Back" />
+
+        <TextView android:id="@+id/tv_title" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/select_rate" android:textColor="@color/colorPrimary" android:textSize="@dimen/text_size_xlarge" android:textStyle="bold" android:gravity="center" />
+
+        <View android:layout_width="48dp" android:layout_height="48dp" />
+
+    </LinearLayout>
+
+    <!-- Content -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="vertical">
+
+        <!-- Vehicle Number Display -->
+        <TextView android:id="@+id/tv_vehicle_number" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="24dp" android:gravity="center" android:textAppearance="@style/TextAppearance.AppCompat.Large" android:textColor="@color/colorTextPrimary" tools:text="ABC-1234" />
+
+        <!-- Zone Name Display -->
+        <TextView android:id="@+id/tv_zone_name" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="32dp" android:gravity="center" android:textAppearance="@style/TextAppearance.AppCompat.Medium" android:textColor="@color/colorTextSecondary" tools:text="Downtown Zone" />
+
+        <!-- Loading Progress -->
+        <ProgressBar android:id="@+id/progress_bar" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center" android:layout_marginBottom="24dp" android:visibility="gone" />
+
+        <!-- Error Message -->
+        <TextView android:id="@+id/tv_error_message" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="16dp" android:gravity="center" android:textAppearance="@style/TextAppearance.AppCompat.Medium" android:textColor="@android:color/holo_red_dark" android:visibility="gone" tools:text="Failed to load rates" />
+
+        <!-- Retry Button -->
+        <com.google.android.material.button.MaterialButton android:id="@+id/btn_retry" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center" android:layout_marginBottom="24dp" android:text="@string/retry" android:visibility="gone" style="@style/Widget.Material3.Button" />
+
+        <!-- Rate Tabs Container -->
+        <LinearLayout android:id="@+id/rate_tabs_container" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="vertical" android:visibility="gone">
+
+            <!-- Horizontal ScrollView for Tabs -->
+            <HorizontalScrollView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="24dp" android:scrollbars="none">
+
+                <com.google.android.material.tabs.TabLayout android:id="@+id/tab_layout" android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@android:color/transparent" app:tabGravity="fill" app:tabMode="scrollable" app:tabSelectedTextColor="@color/colorPrimary" app:tabTextColor="@color/colorTextSecondary" />
+
+            </HorizontalScrollView>
+
+            <!-- ViewPager2 for Tab Content -->
+            <androidx.viewpager2.widget.ViewPager2 android:id="@+id/view_pager" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout> 

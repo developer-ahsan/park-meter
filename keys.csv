@@ -1,0 +1,222 @@
+key,english,french
+amount,AMOUNT,MONTANT
+app_name,Parkapp Meter,Parkapp Compteur
+cancel,Cancel,Annuler
+back_home,Return to Home,Retour à la maison
+check_for_update,Check for update,Vérifier les mises à jour
+checking_for_update,Checking for update,Vérification des mises à jour...
+collect_card_payment,Collect card payment,Collecter le paiement par carte
+collect_payment,Collect payment,Collecter le paiement
+collect_payment_description,Collect a card payment using a physical Stripe test card and a card reader,Collecter un paiement par carte en utilisant une carte de test Stripe physique et un lecteur de carte
+common_workflows,COMMON WORKFLOWS,WORKFLOWS COURANTS
+connecting,Connecting...,Connexion...
+currency,CURRENCY,DEVISE
+current_version,CURRENT VERSION,VERSION ACTUELLE
+default_amount_int,100,100
+default_amount_string,$1.00,1,00 $
+disconnect,Disconnect,Déconnecter
+discovery,Discovery,Découverte
+discover_readers,Discover Readers,Découvrir les lecteurs
+discovery_method,DISCOVERY METHOD,MÉTHODE DE DÉCOUVERTE
+done,Done,Terminé
+empty_reader,Empty Reader,Lecteur vide
+event_log,EVENT LOG,JOURNAL D'ÉVÉNEMENTS
+install_explanation,Version %1$s available. The reader will become unresponsive until the update is complete. Estimated update time: %2$s.,Version %1$s disponible. Le lecteur deviendra non réactif jusqu'à ce que la mise à jour soit terminée. Temps de mise à jour estimé : %2$s.
+install_update,Install update,Installer la mise à jour
+installation_in_progress,The reader will temporarily become unresponsive. Do not leave this page, and keep the reader in range and powered on until the update is complete.,Le lecteur deviendra temporairement non réactif. Ne quittez pas cette page et gardez le lecteur à portée et sous tension jusqu'à ce que la mise à jour soit terminée.
+nearby_readers,NEARBY READERS,LECTEURS À PROXIMITÉ
+no_reader,No reader connected,Aucun lecteur connecté
+no_update_available,No update available,Aucune mise à jour disponible
+reader,Reader,Lecteur
+reader_connection,READER CONNECTION,CONNEXION DU LECTEUR
+reader_description,%1$s %2$s,%1$s %2$s
+save_card,Save card,Sauvegarder la carte
+simulated,Simulated,Simulé
+simulation_explanation,The SDK comes with the ability to simulate behavior without using physical hardware. This makes it easy to quickly test your integration end-to-end, from connecting a reader to taking payments.,Le SDK permet de simuler le comportement sans utiliser de matériel physique. Cela facilite les tests rapides de votre intégration de bout en bout, de la connexion d'un lecteur à la prise de paiements.
+terminal,Terminal,Terminal
+testing,Testing,Test
+update_complete,Update complete,Mise à jour terminée
+update_explanation,Check if a reader software update is available.,Vérifier si une mise à jour logicielle du lecteur est disponible.
+update_in_progress,Update in progress,Mise à jour en cours
+update_progress,Update progress: %1$.1f%%,Progression de la mise à jour : %1$.1f%%
+update_reader,Update Reader,Mettre à jour le lecteur
+update_reader_software,Update reader software,Mettre à jour le logiciel du lecteur
+usd,USD,USD
+skip_tipping,Skip Tipping,Passer le pourboire
+tipping,TIPPING,POURBOIRE
+skip_tipping_description,Must have on-reader tipping configured to have any effect.,Doit avoir le pourboire sur lecteur configuré pour avoir un effet.
+payment_method,PAYMENT METHOD OPTIONS,OPTIONS DE MÉTHODE DE PAIEMENT
+request_extended_auth,Request extended auth,Demander une autorisation étendue
+request_incremental_auth,Request incremental auth,Demander une autorisation incrémentale
+offline,OFFLINE,HORS LIGNE
+offline_behavior,Offline Configuration,Configuration hors ligne
+offline_behavior_default,default,par défaut
+offline_behavior_prefer_online,Prefer Online,Préférer en ligne
+offline_behavior_require_online,Require Online,Exiger en ligne
+offline_behavior_force_offline,Force Offline,Forcer hors ligne
+a11y_terminal_offline,Terminal is offline,Le terminal est hors ligne
+a11y_terminal_online,Terminal is online,Le terminal est en ligne
+a11y_terminal_unknown,Terminal connection status is unknown,Le statut de connexion du terminal est inconnu
+view_offline_logs,View stored offline payment logs,Afficher les journaux de paiement hors ligne stockés
+offline_logs,Offline Logs,Journaux hors ligne
+select_rate,Select Rate,Sélectionner le tarif
+back,Back,Retour
+retry,Retry,Réessayer
+select,Select,Sélectionner
+rate_steps,Rate Steps,Étapes de tarification
+payment_details,Payment Details,Détails du paiement
+discover_reader,Discover Reader,Découvrir le lecteur
+change_reader,Change Reader,Changer de lecteur
+ready_to_connect_reader,Ready to connect reader,Prêt à connecter le lecteur
+discovering_readers,Discovering readers...,Découverte des lecteurs...
+reader_connected,Reader connected,Lecteur connecté
+no_reader_connected,No reader connected,Aucun lecteur connecté
+please_connect_reader,Please connect a reader first,Veuillez d'abord connecter un lecteur
+initiating_payment,Initiating payment...,Initialisation du paiement...
+connected,Connected,Connecté
+organization,Organization,Organisation
+zone,Zone,Zone
+vehicle,Vehicle,Véhicule
+rate,Rate,Tarif
+duration,Duration,Durée
+total_amount,Total Amount,Montant total
+settings,Settings,Paramètres
+organization_details,Organization Details,Détails de l'organisation
+organization_label,Organization:,Organisation :
+park_meter,Park Meter,Compteur de stationnement
+zone_label,Zone:,Zone :
+city_label,City:,Ville :
+not_selected,Not Selected,Non sélectionné
+change_zone,Change Zone,Changer de zone
+enter_zone_pin,Enter Zone PIN,Entrer le code PIN de la zone
+pin_subtitle,Please enter the 4-digit PIN to access zone settings,Veuillez entrer le code PIN à 4 chiffres pour accéder aux paramètres de la zone
+incorrect_pin_message,Incorrect PIN. Please try again.,Code PIN incorrect. Veuillez réessayer.
+verify,Verify,Vérifier
+language_flag_description,Language flag,Drapeau de langue
+dropdown_arrow_description,Dropdown arrow,Flèche déroulante
+english,English,Anglais
+french,French,Français
+select_language,Select Language,Sélectionner la langue
+processing,Processing...,Traitement...
+please_wait,Please wait...,Veuillez patienter...
+connection_status,Connection Status,Statut de connexion
+connecting_tap_to_pay,Connecting to Tap to Pay reader...,Connexion au lecteur Tap to Pay...
+tap_to_pay_requirement,Please ensure your device supports Tap to Pay,Veuillez vous assurer que votre appareil prend en charge Tap to Pay
+ready_for_payments,Ready for payments,Prêt pour les paiements
+not_connected,Not Connected,Non connecté
+connection_controls,Connection Controls,Contrôles de connexion
+restart_discovery,Restart Discovery,Redémarrer la découverte
+debug_tools,Debug Tools,Outils de débogage
+view_logs,View Logs,Afficher les journaux
+organization_name,Organization Name,Nom de l'organisation
+zone_name,Zone Name,Nom de la zone
+vehicle_number,Vehicle Number,Numéro de véhicule
+rate_name,Rate Name,Nom du tarif
+time_description,Time Description,Description du temps
+connected_reader_name,Connected: Reader Name,Connecté : Nom du lecteur
+collect_payment_button,Collect Payment,Collecter le paiement
+license_plate,License Plate,Plaque d'immatriculation
+enter_license_plate_details,Enter License Plate Details,Entrer les détails de la plaque d'immatriculation
+license_plate_label,License Plate,Plaque d'immatriculation
+license_plate_format,Format: Up to 8 characters. Uppercase letters and digits only (e.g., ABCD, 1234, AB12, FF1234),Format : Jusqu'à 8 caractères. Lettres majuscules et chiffres uniquement (ex. : ABCD, 1234, AB12, FF1234)
+next,Next,Suivant
+enter_license_plate_hint,Enter license plate,Entrer la plaque d'immatriculation
+payment_successful,Payment Successful!,Paiement réussi !
+email_receipt,Email Receipt,Reçu par email
+email_receipt_description,Enter your email address to receive a receipt,Entrez votre adresse email pour recevoir un reçu
+amount_paid,Amount Paid:,Montant payé :
+transaction_id,Transaction ID:,ID de transaction :
+email_address,Email Address,Adresse email
+send_email_receipt,Send Email Receipt,Envoyer le reçu par email
+enter_email_hint,Enter your email address,Entrez votre adresse email
+sending,Sending...,Envoi...
+timer_default,0,0
+timer_default_60,60,60
+log_viewer,📋 Log Viewer,📋 Visualiseur de journaux
+home,🏠 Home,🏠 Accueil
+search_icon,🔍,🔍
+refresh,🔄 Refresh,🔄 Actualiser
+filter_discovery,🔍 Filter Discovery,🔍 Filtrer la découverte
+clear,🗑️ Clear,🗑️ Effacer
+search_logs_hint,Search logs...,Rechercher dans les journaux...
+tips,💡 Tips:,💡 Conseils :
+tip_filter_discovery,• Use 'Filter Discovery' to see only discovery-related logs,• Utilisez 'Filtrer la découverte' pour voir uniquement les journaux liés à la découverte
+tip_search_bar,• Use search bar to find specific errors or terms,• Utilisez la barre de recherche pour trouver des erreurs ou termes spécifiques
+tip_copy_text,• Tap and hold to select/copy log text,• Appuyez et maintenez pour sélectionner/copier le texte du journal
+tip_refresh,• Refresh to get latest logs after testing,• Actualisez pour obtenir les derniers journaux après les tests
+select_zone,Select Zone,Sélectionner la zone
+loading_zones,Loading zones...,Chargement des zones...
+search_zones_hint,Search zones...,Rechercher des zones...
+payment_timeout,Payment timeout,Délai d'attente du paiement
+payment_captured_successfully,Payment captured successfully,Paiement capturé avec succès
+capture_failed,Capture failed: %1$s,Échec de la capture : %1$s
+payment_cancelled,Payment cancelled,Paiement annulé
+please_select_zone_first,Please select a zone first,Veuillez d'abord sélectionner une zone
+location_permissions_required,Location permissions are required for reader discovery,Les permissions de localisation sont requises pour la découverte de lecteur
+missing_required_data,Missing required data for availability check,Données requises manquantes pour la vérification de disponibilité
+network_error_check_connection,Network error. Please check your connection.,Erreur réseau. Veuillez vérifier votre connexion.
+please_enter_license_plate,Please enter a license plate number,Veuillez entrer un numéro de plaque d'immatriculation
+invalid_license_plate_format,Invalid format. Use 1-8 uppercase letters and digits only.,Format invalide. Utilisez uniquement 1-8 lettres majuscules et chiffres.
+failed_to_process_parking,Failed to process parking. Please try again.,Échec du traitement du stationnement. Veuillez réessayer.
+network_error_try_again,Network error. Please try again.,Erreur réseau. Veuillez réessayer.
+please_enter_email,Please enter your email address,Veuillez entrer votre adresse email
+please_enter_valid_email,Please enter a valid email address,Veuillez entrer une adresse email valide
+parking_id_not_found,Parking ID not found,ID de stationnement non trouvé
+receipt_sent_successfully,Receipt sent successfully!,Reçu envoyé avec succès !
+failed_to_send_receipt,Failed to send receipt. Please try again.,Échec de l'envoi du reçu. Veuillez réessayer.
+checking_availability,Checking Availability...,Vérification de la disponibilité...
+retry_payment,Retry Payment,Réessayer le paiement
+unknown_city,Unknown City,Ville inconnue
+code_label,Code: %1$s,Code : %1$s
+na,N/A,N/A
+enter_license_plate_button,Enter License Plate,Entrer la plaque d'immatriculation
+no_zone_selected,No Zone Selected,Aucune zone sélectionnée
+park45_meter,Parkapp Meter,Parkapp Compteur
+back_icon_description,Back,Retour
+app_logo_description,App Logo,Logo de l'application
+welcome_to,Welcome to,Bienvenue à
+payment_processing_system,Payment Processing System,Système de traitement des paiements
+failed_to_load_zones,Failed to load zones,Échec du chargement des zones
+your_parking_session_will_end,Your parking session will end:,Votre session de stationnement se terminera :
+service_fee,Service Fee:,Frais de service :
+total,Total:,Total :
+logs,📋 Logs,📋 Journaux
+vehicle_label,Vehicle:,Véhicule :
+selected_zone,Selected Zone:,Zone sélectionnée :
+log_viewer_header,=== Log Viewer ===,=== Visualiseur de journaux ===
+timestamp_label,Timestamp:,Horodatage :
+total_logs_label,Total logs:,Total des journaux :
+showing_last_label,showing last,affichage des derniers
+filter_label,Filter:,Filtre :
+discovery_only,Discovery Only,Découverte uniquement
+all_logs,All Logs,Tous les journaux
+search_label,Search:,Recherche :
+log_separator,==========================================,==========================================
+settings_description,Settings,Paramètres
+lock_icon_description,Lock Icon,Icône de verrouillage
+zone_icon_description,Zone Icon,Icône de zone
+selected_description,Selected,Sélectionné
+no_rates_available,No rates available for this zone and vehicle number,Aucun tarif disponible pour cette zone et ce numéro de véhicule
+failed_to_load_rates,Failed to load rates,Échec du chargement des tarifs
+authentication_failed,Authentication failed. Please check your credentials.,Échec de l'authentification. Veuillez vérifier vos identifiants.
+zone_or_vehicle_not_found,Zone or vehicle not found,Zone ou véhicule non trouvé
+server_error_try_later,Server error. Please try again later.,Erreur serveur. Veuillez réessayer plus tard.
+no_rate_steps_available,No rate steps available for this rate,Aucune étape de tarification disponible pour ce tarif
+failed_to_load_rate_steps,Failed to load rate steps,Échec du chargement des étapes de tarification
+rate_steps_not_found,Rate steps not found,Étapes de tarification non trouvées
+error_loading_logs,Error loading logs: %1$s,Erreur lors du chargement des journaux : %1$s
+show_all,Show All,Afficher tout
+filter_discovery_button,Filter Discovery,Filtrer la découverte
+zone_name_placeholder,Zone Name,Nom de la zone
+city_name_placeholder,City Name,Nom de la ville
+zone_code_placeholder,Zone Code,Code de zone
+vehicle_number_placeholder,Vehicle Number,Numéro de véhicule
+rate_name_placeholder,Rate Name,Nom du tarif
+time_description_placeholder,Time Description,Description du temps
+transaction_id_placeholder,TXN123456789,TXN123456789
+failed_to_create_payment,Failed to create payment: %1$s,Échec de la création du paiement : %1$s
+payment_confirmation_failed,Payment confirmation failed: %1$s,Échec de la confirmation du paiement : %1$s
+payment_collection_failed,Payment collection failed: %1$s,Échec de la collecte du paiement : %1$s
+scan_qr_code,Scan QR Code,Scanner le code QR
+scan_to_view_receipt,Scan to view receipt,Scanner pour voir le reçu
+btn_pay_desc,Click to pay,Cliquez pour payer
