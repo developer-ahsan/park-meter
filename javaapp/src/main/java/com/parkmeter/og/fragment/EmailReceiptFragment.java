@@ -52,7 +52,7 @@ public class EmailReceiptFragment extends Fragment {
     private static final String ARG_AMOUNT = "amount";
     private static final String ARG_TRANSACTION_ID = "transaction_id";
     private static final String ARG_PARKING_ID = "parking_id";
-    private static final long TIMER_DURATION = 60000; // 60 seconds
+    private static final long TIMER_DURATION = 30000; // 30 seconds
     private static final long TIMER_INTERVAL = 1000; // 1 second
 
     private NavigationListener navigationListener;
@@ -152,7 +152,7 @@ public class EmailReceiptFragment extends Fragment {
 
         try {
             // Create the URL with parking ID
-            String qrUrl = "https://park45.ca/api/downloadParking/" + parkingId;
+            String qrUrl = "https://parkapp.ca/api/downloadParking/" + parkingId;
             
             // Generate QR code
             QRCodeWriter writer = new QRCodeWriter();

@@ -16,7 +16,7 @@
 
         </LinearLayout>
 
-        <ImageView android:id="@+id/settings_icon" android:layout_width="48dp" android:layout_height="48dp" android:src="@drawable/ic_settings" app:tint="@color/colorPrimary" android:contentDescription="@string/settings_description" android:clickable="true" android:focusable="true" android:background="?android:attr/selectableItemBackgroundBorderless" android:padding="8dp" />
+        <ImageView android:id="@+id/settings_icon" android:layout_width="48dp" android:layout_height="48dp" android:src="@drawable/ic_settings" app:tint="@color/colorPrimary" android:contentDescription="@string/settings_description" android:clickable="true" android:focusable="true" android:background="?android:attr/selectableItemBackgroundBorderless" android:padding="8dp" android:visibility="gone" />
 
     </LinearLayout>
 
@@ -28,7 +28,7 @@
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/card_app_logo"
                 android:layout_width="match_parent"
-                android:layout_height="282dp"
+                android:layout_height="310dp"
                 android:layout_gravity="center"
                 android:layout_marginBottom="24dp"
                 app:cardCornerRadius="16dp"

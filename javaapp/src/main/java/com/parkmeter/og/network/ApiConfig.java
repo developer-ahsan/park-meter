@@ -6,7 +6,7 @@ package com.parkmeter.og.network;
 public class ApiConfig {
     
     // API Base URL
-    public static final String BASE_URL = "https://park45.ca/api/";
+    public static final String BASE_URL = "https://parkapp.ca/api/";
     
     // API Endpoints
     public static final String GET_ZONES_ENDPOINT = "getZones"; // POST method

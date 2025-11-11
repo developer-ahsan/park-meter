@@ -250,7 +250,7 @@ public class HomeFragment extends Fragment {
 				"</body></html>";
 		
 		// Load HTML content
-		campaignWebView.loadDataWithBaseURL("https://park45.ca", htmlContent, "text/html", "UTF-8", null);
+		campaignWebView.loadDataWithBaseURL("https://parkapp.ca", htmlContent, "text/html", "UTF-8", null);
 	}
 
 	private void updateUI() {
@@ -258,7 +258,8 @@ public class HomeFragment extends Fragment {
 			Zone selectedZone = appState.getSelectedZone();
 			enterVehicleButton.setText(LiteralsHelper.getText(getContext(), "enter_license_plate_button"));
 			tvSelectedZoneDisplay.setText(LiteralsHelper.getText(getContext(), "selected_zone") + " " + selectedZone.getZoneName());
-			settingsIcon.setVisibility(View.VISIBLE);
+			// Keep settings icon hidden
+			settingsIcon.setVisibility(View.GONE);
 			
 			// Load campaign for selected zone
 			loadCampaign(selectedZone.getId());
