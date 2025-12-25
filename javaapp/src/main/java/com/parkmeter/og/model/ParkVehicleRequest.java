@@ -33,8 +33,15 @@ public class ParkVehicleRequest {
     @SerializedName("org")
     private String org;
     
+    @SerializedName("source")
+    private String source;
+    
+    @SerializedName("parking_id")
+    private String parkingId;
+    
     public ParkVehicleRequest(String paymentMethod, String amount, String plate, String zone, 
-                            String city, String from, String to, String rate, int serviceFee, String org) {
+                            String city, String from, String to, String rate, int serviceFee, String org,
+                            String source, String parkingId) {
         this.paymentMethod = paymentMethod;
         this.amount = amount;
         this.plate = plate;
@@ -45,6 +52,8 @@ public class ParkVehicleRequest {
         this.rate = rate;
         this.serviceFee = serviceFee;
         this.org = org;
+        this.source = source;
+        this.parkingId = parkingId;
     }
     
     // Getters
@@ -58,6 +67,8 @@ public class ParkVehicleRequest {
     public String getRate() { return rate; }
     public int getServiceFee() { return serviceFee; }
     public String getOrg() { return org; }
+    public String getSource() { return source; }
+    public String getParkingId() { return parkingId; }
     
     // Setters
     public void setPaymentMethod(String paymentMethod) { this.paymentMethod = paymentMethod; }
@@ -70,4 +81,6 @@ public class ParkVehicleRequest {
     public void setRate(String rate) { this.rate = rate; }
     public void setServiceFee(int serviceFee) { this.serviceFee = serviceFee; }
     public void setOrg(String org) { this.org = org; }
+    public void setSource(String source) { this.source = source; }
+    public void setParkingId(String parkingId) { this.parkingId = parkingId; }
 } 

@@ -35,7 +35,6 @@ import com.stripe.stripeterminal.external.callable.SetupIntentCallback;
 import com.stripe.stripeterminal.external.models.AllowRedisplay;
 import com.stripe.stripeterminal.external.models.BatteryStatus;
 import com.stripe.stripeterminal.external.models.CardPresentParameters;
-import com.stripe.stripeterminal.external.models.CollectConfiguration;
 import com.stripe.stripeterminal.external.models.CreateConfiguration;
 import com.stripe.stripeterminal.external.models.DisconnectReason;
 import com.stripe.stripeterminal.external.models.PaymentIntent;
@@ -49,7 +48,6 @@ import com.stripe.stripeterminal.external.models.SetupIntent;
 import com.stripe.stripeterminal.external.models.SetupIntentCancellationParameters;
 import com.stripe.stripeterminal.external.models.SetupIntentParameters;
 import com.stripe.stripeterminal.external.models.TerminalException;
-import com.stripe.stripeterminal.external.models.TippingConfiguration;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -195,16 +193,9 @@ public class EventFragment extends Fragment implements MobileReaderListener {
             paymentIntent = intent;
             addEvent("Created PaymentIntent", "terminal.createPaymentIntent");
 
-            final Bundle arguments = getArguments();
-            final boolean skipTipping = (arguments != null) && arguments.getBoolean(SKIP_TIPPING);
-            final CollectConfiguration collectConfig = new CollectConfiguration.Builder()
-                    .skipTipping(skipTipping)
-                    .setMoto(DO_NOT_ENABLE_MOTO)
-                    .setTippingConfiguration(
-                            new TippingConfiguration.Builder().build()
-                    ).build();
+            // v5.0.0: simplified collectPaymentMethod signature (no CollectConfiguration)
             viewModel.collectTask = Terminal.getInstance().collectPaymentMethod(
-                    paymentIntent, collectPaymentMethodCallback, collectConfig);
+                    paymentIntent, collectPaymentMethodCallback);
         }
 
         @Override
@@ -293,6 +284,8 @@ public class EventFragment extends Fragment implements MobileReaderListener {
                     metadata.put("amount_cents", String.valueOf(arguments.getLong(AMOUNT)));
                     metadata.put("amount_dollars", String.format("%.2f", arguments.getLong(AMOUNT) / 100.0));
                     
+                    metadata.put("source","meter");
+
                     // Add timestamp
                     java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.US);
                     metadata.put("payment_timestamp", sdf.format(new java.util.Date()));

@@ -24,7 +24,6 @@ import com.stripe.stripeterminal.Terminal;
 import com.stripe.stripeterminal.external.callable.Callback;
 import com.stripe.stripeterminal.external.callable.Cancelable;
 import com.stripe.stripeterminal.external.callable.PaymentIntentCallback;
-import com.stripe.stripeterminal.external.models.CollectConfiguration;
 import com.stripe.stripeterminal.external.models.CreateConfiguration;
 import com.stripe.stripeterminal.external.models.PaymentIntent;
 import com.stripe.stripeterminal.external.models.PaymentIntentParameters;
@@ -32,7 +31,6 @@ import com.stripe.stripeterminal.external.models.PaymentIntentStatus;
 import com.stripe.stripeterminal.external.models.PaymentMethodOptionsParameters;
 import com.stripe.stripeterminal.external.models.CardPresentParameters;
 import com.stripe.stripeterminal.external.models.TerminalException;
-import com.stripe.stripeterminal.external.models.TippingConfiguration;
 
 import java.io.IOException;
 import retrofit2.Call;
@@ -114,6 +112,9 @@ public class DirectPaymentHandler implements PaymentIntentCallback {
         metadata.put("payment_type", "parking");
         metadata.put("amount_cents", String.valueOf(amount));
         metadata.put("amount_dollars", String.format("%.2f", amount / 100.0));
+
+        // source
+        metadata.put("source","meter");
         
         // Add timestamp
         java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.US);
@@ -149,42 +150,46 @@ public class DirectPaymentHandler implements PaymentIntentCallback {
     
     /**
      * Create a detailed description for the payment intent that will show in Stripe dashboard
+     * Format: {plate} is parked from {from} to {to} in {zone_name}, {org_name} - meter
      */
     private String createPaymentDescription() {
+        // Get current time and calculate end time
+        java.util.Date currentTime = new java.util.Date();
+        java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MMMM dd'st' yyyy, hh:mm a", java.util.Locale.US);
+        String fromTime = dateFormat.format(currentTime);
+        
+        // Calculate end time based on time description
+        String toTime = calculateEndTime(currentTime, selectedRateStep.getTimeDesc());
+        
         StringBuilder description = new StringBuilder();
         
-        // Add plate number
-        if (plateNumber != null && !plateNumber.trim().isEmpty()) {
-            description.append("Plate: ").append(plateNumber.trim());
-        }
+        // Add plate number (required field)
+        String plate = (plateNumber != null && !plateNumber.trim().isEmpty()) ? plateNumber.trim() : "Vehicle";
+        description.append(plate);
+        
+        description.append(" is parked from ");
+        description.append(fromTime);
+        description.append(" to ");
+        description.append(toTime);
+        description.append(" in ");
         
         // Add zone name
+        String zoneName = "";
         if (selectedZone.getZoneName() != null && !selectedZone.getZoneName().trim().isEmpty()) {
-            if (description.length() > 0) description.append(" | ");
-            description.append("Zone: ").append(selectedZone.getZoneName().trim());
+            zoneName = selectedZone.getZoneName().trim();
         }
+        description.append(zoneName);
         
-        // Add rate name
-        if (selectedRate.getRateName() != null && !selectedRate.getRateName().trim().isEmpty()) {
-            if (description.length() > 0) description.append(" | ");
-            description.append("Rate: ").append(selectedRate.getRateName().trim());
-        }
-        
-        // Add time description
-        if (selectedRateStep.getTimeDesc() != null && !selectedRateStep.getTimeDesc().trim().isEmpty()) {
-            if (description.length() > 0) description.append(" | ");
-            description.append("Time: ").append(selectedRateStep.getTimeDesc().trim());
-        }
-        
-        // Add amount
-        if (description.length() > 0) description.append(" | ");
-        description.append("Amount: $").append(String.format("%.2f", amount / 100.0)).append(" CAD");
+        description.append(", ");
         
         // Add organization name
+        String orgName = "";
         if (selectedZone.getOrganization() != null && selectedZone.getOrganization().getOrgName() != null) {
-            if (description.length() > 0) description.append(" | ");
-            description.append("Org: ").append(selectedZone.getOrganization().getOrgName().trim());
+            orgName = selectedZone.getOrganization().getOrgName().trim();
         }
+        description.append(orgName);
+        
+        description.append(" - meter");
         
         // Truncate if too long (Stripe has limits)
         String finalDescription = description.toString();
@@ -257,12 +262,6 @@ public class DirectPaymentHandler implements PaymentIntentCallback {
         // Payment intent amount: " + paymentIntent.getAmount());
         // Payment intent currency: " + paymentIntent.getCurrency());
         
-        CollectConfiguration collectConfig = new CollectConfiguration.Builder()
-                .skipTipping(skipTipping)
-                .setMoto(false) // DO_NOT_ENABLE_MOTO = false
-                .setTippingConfiguration(new TippingConfiguration.Builder().build())
-                .build();
-        
         // Use a separate callback for payment method collection
         PaymentIntentCallback collectCallback = new PaymentIntentCallback() {
             @Override
@@ -292,7 +291,8 @@ public class DirectPaymentHandler implements PaymentIntentCallback {
             }
         };
         
-        collectTask = Terminal.getInstance().collectPaymentMethod(paymentIntent, collectCallback, collectConfig);
+        // v5.0.0: simplified collectPaymentMethod signature (no CollectConfiguration)
+        collectTask = Terminal.getInstance().collectPaymentMethod(paymentIntent, collectCallback);
     }
     
     private void handlePaymentFailure(String errorMessage) {
@@ -382,6 +382,9 @@ public class DirectPaymentHandler implements PaymentIntentCallback {
         // Calculate end time based on time description
         String toTime = calculateEndTime(currentTime, selectedRateStep.getTimeDesc());
         
+        // Generate parking_id (6-digit random number between 100000 and 999999)
+        int parkingId = (int)(100000 + Math.random() * 900000);
+        
         // Create park vehicle request (same format as zero amount case)
         ParkVehicleRequest request = new ParkVehicleRequest(
             paymentIntentId, // paymentMethod - payment intent ID for non-zero amount
@@ -393,7 +396,9 @@ public class DirectPaymentHandler implements PaymentIntentCallback {
             toTime, // to
             selectedRate.getId(), // rate ID
             selectedRateStep.getServiceFee(), // service_fee from rate step
-            selectedZone.getOrganization().getId() // org ID
+            selectedZone.getOrganization().getId(), // org ID
+            "meter", // source
+            String.valueOf(parkingId) // parking_id
         );
         
         // Calling park_vehicle API after successful payment");

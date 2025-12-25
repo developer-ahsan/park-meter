@@ -92,6 +92,8 @@ public class PaymentFragment extends Fragment {
     private Cancelable discoveryTask;
     private boolean isDiscovering = false;
     private String dynamicLocationId = null;
+    private android.os.Handler discoveryTimeoutHandler = new android.os.Handler();
+    private Runnable discoveryTimeoutRunnable;
     
     // Overlay loader
     private View overlayLoader;
@@ -197,6 +199,13 @@ public class PaymentFragment extends Fragment {
     private void startAutomaticPaymentFlow() {
         // Check if amount is greater than 0
         if (selectedRateStep.getTotal() > 0) {
+            // Check if Terminal is initialized before accessing
+            if (!Terminal.isInitialized()) {
+                Log.d("PaymentFragment", "Terminal not initialized yet, starting discovery to initialize");
+                startReaderDiscovery();
+                return;
+            }
+            
             // First check if reader is already connected
             Terminal terminal = Terminal.getInstance();
             ConnectionStatus status = terminal.getConnectionStatus();
@@ -416,6 +425,12 @@ public class PaymentFragment extends Fragment {
     }
 
     private void checkReaderConnectionStatus() {
+        // Check if Terminal is initialized before accessing
+        if (!Terminal.isInitialized()) {
+            Log.d("PaymentFragment", "Terminal not initialized yet, skipping reader connection check");
+            return;
+        }
+        
         Terminal terminal = Terminal.getInstance();
         ConnectionStatus status = terminal.getConnectionStatus();
         
@@ -443,7 +458,7 @@ public class PaymentFragment extends Fragment {
         }
         
         updateStatus(LiteralsHelper.getText(getContext(), "discovering_readers"), true);
-        isDiscovering = true;
+        // isDiscovering = true; // Commented out per Stripe support recommendation
         
         // Start discovery on the same screen
         startAutoDiscovery();
@@ -454,48 +469,131 @@ public class PaymentFragment extends Fragment {
             return;
         }
         
+        // In v5.0.0, Terminal initializes lazily - calling discoverReaders will trigger initialization
+        Log.d("PaymentFragment", "========== START AUTO DISCOVERY ==========");
+        Log.d("PaymentFragment", "Terminal.isInitialized(): " + Terminal.isInitialized());
+        
         updateStatus(LiteralsHelper.getText(getContext(), "discovering_readers"), true);
         updateOverlayLoader("Discovering Readers", "Searching for available payment readers...");
         isDiscovering = true;
         
-        final DiscoveryConfiguration config = new DiscoveryConfiguration.TapToPayDiscoveryConfiguration(false);
+        // For Tap to Pay on Android, the device itself is the reader
+        // Using TapToPayDiscoveryConfiguration for v5.0.0
+        final boolean isSimulated = false; // Production mode
+        Log.d("PaymentFragment", "========================================");
+        Log.d("PaymentFragment", "Creating TapToPayDiscoveryConfiguration");
+        Log.d("PaymentFragment", "  Mode: " + (isSimulated ? "SIMULATED (test cards)" : "PRODUCTION (real payments)"));
+        Log.d("PaymentFragment", "  Device will act as the reader (Tap to Pay)");
+        Log.d("PaymentFragment", "========================================");
         
-        discoveryTask = Terminal.getInstance().discoverReaders(config, discoveryListener, new Callback() {
-            @Override
-            public void onSuccess() {
-                // Discovery started successfully
-            }
+        final DiscoveryConfiguration config = new DiscoveryConfiguration.TapToPayDiscoveryConfiguration(isSimulated);
+        Log.d("PaymentFragment", "✓ TapToPayDiscoveryConfiguration created successfully");
+        
+        try {
+            Log.d("PaymentFragment", "Attempting to get Terminal instance...");
+            Terminal terminal = Terminal.getInstance();
+            Log.d("PaymentFragment", "✓ Got Terminal instance successfully");
+            Log.d("PaymentFragment", "Calling discoverReaders()...");
             
-            @Override
-            public void onFailure(@NonNull TerminalException e) {
-                if (getActivity() != null) {
-                    getActivity().runOnUiThread(() -> {
-                        updateStatus("Discovery failed: " + e.getErrorMessage(), false);
-                        updateOverlayLoader("Discovery Failed", "Error: " + e.getErrorMessage());
-                        isDiscovering = false;
-                        btnCollectPayment.setEnabled(true);
-                        btnCollectPayment.setText(LiteralsHelper.getText(getContext(), "retry_payment"));
-                        
-                        // Hide overlay after 3 seconds
-                        new android.os.Handler().postDelayed(() -> hideOverlayLoader(), 3000);
-                    });
+            discoveryTask = terminal.discoverReaders(config, discoveryListener, new Callback() {
+                @Override
+                public void onSuccess() {
+                    Log.d("PaymentFragment", "✓✓✓ Discovery started successfully");
+                    Log.d("PaymentFragment", "Terminal now initialized: " + Terminal.isInitialized());
+                    Log.d("PaymentFragment", "Waiting for onUpdateDiscoveredReaders callback...");
+                    
+                    // Set a timeout for discovery (30 seconds)
+                    discoveryTimeoutRunnable = new Runnable() {
+                        @Override
+                        public void run() {
+                            if (isDiscovering && !isReaderConnected) {
+                                Log.e("PaymentFragment", "✗✗✗ Discovery timeout - no readers found after 30 seconds");
+                                Log.e("PaymentFragment", "Device may not support Tap to Pay or NFC may be disabled");
+                                if (discoveryTask != null) {
+                                    discoveryTask.cancel(new Callback() {
+                                        @Override
+                                        public void onSuccess() {
+                                            Log.d("PaymentFragment", "Discovery cancelled due to timeout");
+                                        }
+                                        @Override
+                                        public void onFailure(@NonNull TerminalException e) {
+                                            Log.e("PaymentFragment", "Failed to cancel discovery: " + e.getErrorMessage());
+                                        }
+                                    });
+                                }
+                                if (getActivity() != null) {
+                                    getActivity().runOnUiThread(() -> {
+                                        isDiscovering = false;
+                                        updateStatus("No reader found. Please check:\n1. Device supports Tap to Pay\n2. NFC is enabled\n3. Stripe account is configured", false);
+                                        updateOverlayLoader("Discovery Timeout", "No readers found. Check device compatibility.");
+                                        btnCollectPayment.setEnabled(true);
+                                        btnCollectPayment.setText(LiteralsHelper.getText(getContext(), "retry_payment"));
+                                        new android.os.Handler().postDelayed(() -> hideOverlayLoader(), 5000);
+                                    });
+                                }
+                            }
+                        }
+                    };
+                    discoveryTimeoutHandler.postDelayed(discoveryTimeoutRunnable, 30000); // 30 second timeout
                 }
-            }
-        });
+                
+                @Override
+                public void onFailure(@NonNull TerminalException e) {
+                    Log.e("PaymentFragment", "✗✗✗ Discovery FAILED to start");
+                    Log.e("PaymentFragment", "Error message: " + e.getErrorMessage());
+                    Log.e("PaymentFragment", "Error code: " + e.getErrorCode());
+                    Log.e("PaymentFragment", "Error type: " + e.getClass().getSimpleName());
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(() -> {
+                            updateStatus("Discovery failed: " + e.getErrorMessage(), false);
+                            updateOverlayLoader("Discovery Failed", "Error: " + e.getErrorMessage());
+                            isDiscovering = false;
+                            btnCollectPayment.setEnabled(true);
+                            btnCollectPayment.setText(LiteralsHelper.getText(getContext(), "retry_payment"));
+                            
+                            // Hide overlay after 3 seconds
+                            new android.os.Handler().postDelayed(() -> hideOverlayLoader(), 3000);
+                        });
+                    }
+                }
+            });
+            Log.d("PaymentFragment", "discoverReaders() called, waiting for callbacks...");
+        } catch (Exception e) {
+            Log.e("PaymentFragment", "✗✗✗ EXCEPTION calling discoverReaders()", e);
+            updateStatus("Discovery error: " + e.getMessage(), false);
+            isDiscovering = false;
+        }
+        Log.d("PaymentFragment", "==========================================");
     }
     
     private final DiscoveryListener discoveryListener = new DiscoveryListener() {
         @Override
         public void onUpdateDiscoveredReaders(@NonNull List<Reader> readers) {
+            Log.d("PaymentFragment", "========== onUpdateDiscoveredReaders ==========");
+            Log.d("PaymentFragment", "Readers count: " + readers.size());
+            for (int i = 0; i < readers.size(); i++) {
+                Reader r = readers.get(i);
+                Log.d("PaymentFragment", "  Reader[" + i + "]: " + r.getSerialNumber() + " (Type: " + r.getDeviceType() + ")");
+            }
+            Log.d("PaymentFragment", "============================================");
+            
             if (getActivity() != null) {
                 getActivity().runOnUiThread(() -> {
                     if (!readers.isEmpty()) {
+                        // Cancel discovery timeout since we found a reader
+                        if (discoveryTimeoutRunnable != null) {
+                            discoveryTimeoutHandler.removeCallbacks(discoveryTimeoutRunnable);
+                            Log.d("PaymentFragment", "Discovery timeout cancelled - reader found");
+                        }
+                        
                         // Auto-connect to the first available reader
                         Reader reader = readers.get(0);
+                        Log.d("PaymentFragment", "Auto-connecting to reader: " + reader.getSerialNumber());
                         updateOverlayLoader("Connecting to Reader", "Found: " + reader.getSerialNumber());
                         connectToReader(reader);
                     } else {
-                        updateOverlayLoader("Searching for Reader", "No readers found, still searching...");
+                        Log.d("PaymentFragment", "No readers found yet, still searching...");
+                        updateOverlayLoader("Searching for Reader", "Looking for Tap to Pay device...");
                     }
                 });
             }
@@ -503,11 +601,20 @@ public class PaymentFragment extends Fragment {
     };
     
     private void connectToReader(Reader reader) {
+        Log.d("PaymentFragment", "========== CONNECT TO READER ==========");
+        Log.d("PaymentFragment", "Reader: " + reader.getSerialNumber());
+        Log.d("PaymentFragment", "Terminal.isInitialized(): " + Terminal.isInitialized());
+        
         updateStatus("Connecting to " + reader.getSerialNumber() + "...", true);
         updateOverlayLoader("Connecting to Reader", "Establishing connection with " + reader.getSerialNumber());
         
         // Use dynamic location ID from API response, fallback to default if not available
         String connectLocationId = dynamicLocationId != null ? dynamicLocationId : "tml_GJv9FgsphhQmKS";
+        
+        // Note: TapToPayUxConfiguration is available in Stripe Terminal SDK v5.0.0+
+        // However, the TapToPayConnectionConfiguration constructor in v5.0.0 only accepts:
+        // (String locationId, boolean autoReconnectOnUnexpectedDisconnect, TapToPayReaderListener listener)
+        // UX configuration will be added in a future SDK update or configured differently
         
         Terminal.getInstance().connectReader(
             reader,
@@ -527,6 +634,11 @@ public class PaymentFragment extends Fragment {
                         updateStatus(LiteralsHelper.getText(getContext(), "reader_connected") + ": " + connectedReaderName, false);
                         btnCollectPayment.setEnabled(true);
                         isDiscovering = false;
+                        
+                        // Configure Tap to Pay UX with Front tap zone (now that Terminal is initialized)
+                        if (getActivity() instanceof MainActivity) {
+                            ((MainActivity) getActivity()).configureTapToPayUX();
+                        }
                         
                         // Stop discovery
                         if (discoveryTask != null) {
@@ -695,6 +807,9 @@ public class PaymentFragment extends Fragment {
         // Calculate end time based on time description
         String toTime = calculateEndTime(currentTime, selectedRateStep.getTimeDesc());
         
+        // Generate parking_id (6-digit random number between 100000 and 999999)
+        int parkingId = (int)(100000 + Math.random() * 900000);
+        
         // Create park vehicle request
         ParkVehicleRequest request = new ParkVehicleRequest(
             "", // paymentMethod - empty for zero amount
@@ -706,7 +821,9 @@ public class PaymentFragment extends Fragment {
             toTime, // to
             selectedRate.getId(), // rate
             selectedRateStep.getServiceFee(), // service_fee from rate step
-            selectedZone.getOrganization().getId() // org
+            selectedZone.getOrganization().getId(), // org
+            "meter", // source
+            String.valueOf(parkingId) // parking_id
         );
         
         // Call park_vehicle API

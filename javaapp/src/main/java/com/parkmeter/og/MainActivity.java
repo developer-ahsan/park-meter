@@ -81,10 +81,28 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+        Log.d("MainActivity", "========== MainActivity.onCreate() START ==========");
+        
         // Switch from splash screen theme to normal theme
         setTheme(R.style.Theme_Example);
         
         super.onCreate(savedInstanceState);
+        
+        // Initialize Terminal SDK (per Stripe support recommendation)
+        if (!Terminal.isInitialized()) {
+            try {
+                Terminal.init(getApplicationContext(), LogLevel.VERBOSE, new TokenProvider(), TerminalEventListener.instance, new OfflineModeHandler(new OfflineModeHandler.Callback() {
+                    @Override
+                    public void makeToast(String message) {
+                        // Handle toast messages
+                    }
+                }));
+                Log.d("MainActivity", "Terminal initialized successfully in onCreate");
+            } catch (TerminalException e) {
+                Log.e("MainActivity", "Failed to initialize Terminal: " + e.getMessage());
+                throw new RuntimeException(e);
+            }
+        }
 
         setContentView(R.layout.activity_main);
 
@@ -97,6 +115,8 @@ public class MainActivity extends AppCompatActivity implements
         if (savedZone != null) {
             appState.setSelectedZone(savedZone);
         }
+        
+        Log.d("MainActivity", "Terminal initialized at onCreate: " + Terminal.isInitialized());
 
         // Apply saved language preference on startup
         LanguageManager.applyLanguage(this);
@@ -130,6 +150,9 @@ public class MainActivity extends AppCompatActivity implements
         
         // Download fresh literals every time the app comes to foreground
         downloadFreshLiterals();
+        
+        // NOTE: In v5.0.0, Terminal initializes lazily. Don't call configureTapToPayUX() here.
+        // It will be called after reader connection in PaymentFragment/TerminalFragment/DiscoveryFragment
     }
 
     @Override
@@ -627,16 +650,9 @@ public class MainActivity extends AppCompatActivity implements
      * Initialize the [Terminal] and go to the appropriate screen based on zone selection
      */
     private void initialize() {
-        // Initialize the Terminal as soon as possible
-        try {
-            if (!Terminal.isInitialized()) {
-                Terminal.initTerminal(getApplicationContext(), LogLevel.VERBOSE, new TokenProvider(),
-                        TerminalEventListener.instance, TerminalOfflineListener.instance);
-            }
-        } catch (TerminalException e) {
-            // Failed to initialize Terminal
-            throw new RuntimeException(e);
-        }
+        // NOTE: In Stripe Terminal SDK v5.0.0, Terminal initializes lazily on first use
+        // Do NOT call Terminal.getInstance() or configureTapToPayUX() here
+        // It will be configured after the first reader discovery/connection
 
         // Check if it's first time or no zone is selected
         if (sharedPreferencesManager.isFirstTime() || !appState.isZoneSelected()) {
@@ -644,6 +660,45 @@ public class MainActivity extends AppCompatActivity implements
             navigateTo(ZonesFragment.TAG, new ZonesFragment());
         } else {
             navigateTo(HomeFragment.TAG, new HomeFragment());
+        }
+    }
+    
+    public void configureTapToPayUX() {
+        // Configure Tap to Pay UX with Front tap zone
+        // This should be called after Terminal is ready (e.g., after first reader discovery/connection)
+        Log.d("MainActivity", "========== CONFIGURING TAP TO PAY UX ==========");
+        Log.d("MainActivity", "Terminal initialized: " + Terminal.isInitialized());
+        
+        if (!Terminal.isInitialized()) {
+            Log.w("MainActivity", "Terminal not initialized yet, skipping Tap to Pay UX configuration");
+            return;
+        }
+        
+        try {
+            // Create Front tap zone with center positioning (xBias=0.5f, yBias=0.5f)
+            com.stripe.stripeterminal.external.models.TapToPayUxConfiguration.TapZone.Front frontTapZone = 
+                new com.stripe.stripeterminal.external.models.TapToPayUxConfiguration.TapZone.Front(0.5f, 0.5f);
+            Log.d("MainActivity", "Created Front tap zone: xBias=0.5f, yBias=0.5f");
+            
+            // Create UX configuration with Front tap zone (null for default color scheme and dark mode)
+            com.stripe.stripeterminal.external.models.TapToPayUxConfiguration uxConfig = 
+                new com.stripe.stripeterminal.external.models.TapToPayUxConfiguration(
+                    frontTapZone,
+                    null,  // Use default color scheme
+                    null   // Use default dark mode
+                );
+            Log.d("MainActivity", "Created TapToPayUxConfiguration object");
+            
+            // Set the tap zone configuration globally for all Tap to Pay operations
+            Terminal.getInstance().setTapToPayUxConfiguration(uxConfig);
+            Log.d("MainActivity", "✓✓✓ SUCCESS: Tap to Pay UX configured with Front tap zone!");
+            Log.d("MainActivity", "==============================================");
+        } catch (Exception e) {
+            Log.e("MainActivity", "✗✗✗ FAILED to set Tap to Pay UX configuration");
+            Log.e("MainActivity", "Error type: " + e.getClass().getSimpleName());
+            Log.e("MainActivity", "Error message: " + e.getMessage());
+            Log.e("MainActivity", "Stack trace:", e);
+            Log.d("MainActivity", "==============================================");
         }
     }
 

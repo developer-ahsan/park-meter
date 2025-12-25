@@ -206,6 +206,11 @@ public class DiscoveryFragment extends Fragment implements DiscoveryListener, Mo
         
         viewModel.isConnecting.setValue(true);
         
+        // Note: TapToPayUxConfiguration is available in Stripe Terminal SDK v5.0.0+
+        // However, the TapToPayConnectionConfiguration constructor in v5.0.0 only accepts:
+        // (String locationId, boolean autoReconnectOnUnexpectedDisconnect, TapToPayReaderListener listener)
+        // UX configuration will be added in a future SDK update or configured differently
+        
         Terminal.getInstance().connectReader(
             reader,
             new ConnectionConfiguration.TapToPayConnectionConfiguration(

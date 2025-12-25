@@ -44,7 +44,10 @@ public class StripeTerminalApplication extends Application {
         // Download fresh literals in background
         downloadFreshLiterals();
 
+        Log.d("StripeTerminalApplication", "========== INITIALIZING STRIPE TERMINAL ==========");
         TerminalApplicationDelegate.onCreate(this);
+        Log.d("StripeTerminalApplication", "TerminalApplicationDelegate.onCreate() completed");
+        Log.d("StripeTerminalApplication", "==================================================");
     }
 
     public static StripeTerminalApplication getInstance() {
