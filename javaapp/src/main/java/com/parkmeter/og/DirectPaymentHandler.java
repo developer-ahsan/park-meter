@@ -15,10 +15,6 @@ import com.parkmeter.og.model.Zone;
 import com.parkmeter.og.model.Rate;
 import com.parkmeter.og.model.RateStep;
 
-import com.parkmeter.og.network.Park45ApiClient;
-import com.parkmeter.og.network.Park45ApiService;
-import com.parkmeter.og.model.ParkVehicleRequest;
-import com.parkmeter.og.model.ParkVehicleResponse;
 import com.parkmeter.og.utils.LiteralsHelper;
 import com.stripe.stripeterminal.Terminal;
 import com.stripe.stripeterminal.external.callable.Callback;
@@ -91,10 +87,62 @@ public class DirectPaymentHandler implements PaymentIntentCallback {
         // Create a detailed description for the payment intent
         String description = createPaymentDescription();
         
-        // Add detailed metadata for Stripe dashboard
+        // Get current time and calculate end time for metadata
+        java.util.Date currentTime = new java.util.Date();
+        java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MMMM dd'st' yyyy, hh:mm a", java.util.Locale.US);
+        String fromTime = dateFormat.format(currentTime);
+        String toTime = calculateEndTime(currentTime, selectedRateStep.getTimeDesc());
+        
+        // Generate parking_id (6-digit random number between 100000 and 999999)
+        int parkingId = (int)(100000 + Math.random() * 900000);
+        
+        // Add all park_vehicle fields to metadata
+        // amount (in cents as string)
+        metadata.put("amount", String.valueOf(selectedRateStep.getTotal()));
+        
+        // plate
         if (plateNumber != null && !plateNumber.trim().isEmpty()) {
-            metadata.put("plate_number", plateNumber.trim());
+            metadata.put("plate", plateNumber.trim());
         }
+        
+        // zone (zone ID)
+        if (selectedZone.getId() != null) {
+            metadata.put("zone", selectedZone.getId());
+        }
+        
+        // city (city ID)
+        if (selectedZone.getCity() != null && selectedZone.getCity().getId() != null) {
+            metadata.put("city", selectedZone.getCity().getId());
+        } else {
+            metadata.put("city", "");
+        }
+        
+        // from (start time)
+        metadata.put("from", fromTime);
+        
+        // to (end time)
+        metadata.put("to", toTime);
+        
+        // rate (rate ID)
+        if (selectedRate.getId() != null) {
+            metadata.put("rate", selectedRate.getId());
+        }
+        
+        // service_fee
+        metadata.put("service_fee", String.valueOf(selectedRateStep.getServiceFee()));
+        
+        // org (organization ID)
+        if (selectedZone.getOrganization() != null && selectedZone.getOrganization().getId() != null) {
+            metadata.put("org", selectedZone.getOrganization().getId());
+        }
+        
+        // source
+        metadata.put("source", "meter");
+        
+        // parking_id
+        metadata.put("parking_id", String.valueOf(parkingId));
+        
+        // Additional metadata for Stripe dashboard (keeping existing fields for compatibility)
         if (selectedZone.getZoneName() != null && !selectedZone.getZoneName().trim().isEmpty()) {
             metadata.put("zone_name", selectedZone.getZoneName().trim());
         }
@@ -112,9 +160,6 @@ public class DirectPaymentHandler implements PaymentIntentCallback {
         metadata.put("payment_type", "parking");
         metadata.put("amount_cents", String.valueOf(amount));
         metadata.put("amount_dollars", String.format("%.2f", amount / 100.0));
-
-        // source
-        metadata.put("source","meter");
         
         // Add timestamp
         java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.US);
@@ -328,19 +373,16 @@ public class DirectPaymentHandler implements PaymentIntentCallback {
                 // Capturing payment intent: " + paymentIntentId);
                 com.parkmeter.og.network.ApiClient.capturePaymentIntent(paymentIntentId);
                 // Payment captured successfully");
-                
-                // Call park_vehicle API after successful capture
-                callParkVehicleAPI(paymentIntentId);
-                
             } catch (IOException e) {
                 // Failed to capture payment", e);
-                // Continue with park_vehicle API call even if capture fails
-                callParkVehicleAPI(paymentIntentId);
             }
-        } else {
-            // Payment intent ID is null");
-            // Still try to call park_vehicle API
-            callParkVehicleAPI(null);
+        }
+        
+        // Navigate to success screen - park_vehicle data is now in Stripe metadata
+        if (activity instanceof NavigationListener) {
+            NavigationListener navigationListener = (NavigationListener) activity;
+            String parkId = paymentIntentId != null ? paymentIntentId : "";
+            navigationListener.onPaymentSuccessful(amount, parkId, paymentIntentId != null ? paymentIntentId : "");
         }
     }
     
@@ -373,80 +415,9 @@ public class DirectPaymentHandler implements PaymentIntentCallback {
         // Payment status debug information
     }
     
-    private void callParkVehicleAPI(String paymentIntentId) {
-        // Get current time and calculate end time
-        java.util.Date currentTime = new java.util.Date();
-        java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MMMM dd'st' yyyy, hh:mm a", java.util.Locale.US);
-        String fromTime = dateFormat.format(currentTime);
-        
-        // Calculate end time based on time description
-        String toTime = calculateEndTime(currentTime, selectedRateStep.getTimeDesc());
-        
-        // Generate parking_id (6-digit random number between 100000 and 999999)
-        int parkingId = (int)(100000 + Math.random() * 900000);
-        
-        // Create park vehicle request (same format as zero amount case)
-        ParkVehicleRequest request = new ParkVehicleRequest(
-            paymentIntentId, // paymentMethod - payment intent ID for non-zero amount
-            String.valueOf(selectedRateStep.getTotal()), // amount in cents
-            plateNumber, // plate
-            selectedZone.getId(), // zone ID
-            selectedZone.getCity() != null ? selectedZone.getCity().getId() : "", // city ID
-            fromTime, // from
-            toTime, // to
-            selectedRate.getId(), // rate ID
-            selectedRateStep.getServiceFee(), // service_fee from rate step
-            selectedZone.getOrganization().getId(), // org ID
-            "meter", // source
-            String.valueOf(parkingId) // parking_id
-        );
-        
-        // Calling park_vehicle API after successful payment");
-        // Request: " + request.getPlate() + " in zone: " + request.getZone() + " payment: " + request.getPaymentMethod());
-        
-        // Call park_vehicle API
-        Park45ApiService apiService = Park45ApiClient.getInstance().getApiService();
-                    apiService.parkVehicle(request).enqueue(new retrofit2.Callback<ParkVehicleResponse>() {
-            @Override
-            public void onResponse(Call<ParkVehicleResponse> call, Response<ParkVehicleResponse> response) {
-                if (activity != null) {
-                    activity.runOnUiThread(() -> {
-                        if (response.isSuccessful() && response.body() != null) {
-                            ParkVehicleResponse parkResponse = response.body();
-                            // Park vehicle successful - _id: " + parkResponse.getId() + ", parking_id: " + parkResponse.getParkingId());
-                            
-                            // Navigate to email receipt with _id (as required by email API)
-                            if (activity instanceof NavigationListener) {
-                                NavigationListener navigationListener = (NavigationListener) activity;
-                                navigationListener.onPaymentSuccessful(amount, parkResponse.getId(), paymentIntentId);
-                            }
-                        } else {
-                            // Park vehicle API failed with code: " + response.code());
-                            // Still navigate to email receipt with payment intent ID as fallback
-                            if (activity instanceof NavigationListener) {
-                                NavigationListener navigationListener = (NavigationListener) activity;
-                                navigationListener.onPaymentSuccessful(amount, paymentIntentId, paymentIntentId);
-                            }
-                        }
-                    });
-                }
-            }
-            
-            @Override
-            public void onFailure(Call<ParkVehicleResponse> call, Throwable t) {
-                if (activity != null) {
-                    activity.runOnUiThread(() -> {
-                        // Park vehicle API call failed
-                        // Still navigate to email receipt with payment intent ID as fallback
-                        if (activity instanceof NavigationListener) {
-                            NavigationListener navigationListener = (NavigationListener) activity;
-                            navigationListener.onPaymentSuccessful(amount, paymentIntentId, paymentIntentId);
-                        }
-                    });
-                }
-            }
-        });
-    }
+    // Removed: callParkVehicleAPI method - park_vehicle data is now stored in Stripe metadata
+    // All park_vehicle fields (plate, zone, city, from, to, rate, service_fee, org, source, parking_id)
+    // are now included in the payment intent metadata created in startPayment()
     
     private String calculateEndTime(java.util.Date startTime, String timeDesc) {
         try {

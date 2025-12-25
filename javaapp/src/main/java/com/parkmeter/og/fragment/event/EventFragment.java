@@ -278,13 +278,21 @@ public class EventFragment extends Fragment implements MobileReaderListener {
                     // Create detailed description for payment intent
                     String description = createPaymentDescription(arguments.getLong(AMOUNT));
                     
-                    // Create metadata for parking details
+                    // Generate parking_id (6-digit random number between 100000 and 999999)
+                    int parkingId = (int)(100000 + Math.random() * 900000);
+                    
+                    // Create metadata for parking details (park_vehicle fields where available)
                     java.util.Map<String, String> metadata = new java.util.HashMap<>();
+                    
+                    // Add park_vehicle fields (limited data available in EventFragment)
+                    metadata.put("amount", String.valueOf(arguments.getLong(AMOUNT)));
+                    metadata.put("source", "meter");
+                    metadata.put("parking_id", String.valueOf(parkingId));
+                    
+                    // Additional metadata for Stripe dashboard
                     metadata.put("payment_type", "parking");
                     metadata.put("amount_cents", String.valueOf(arguments.getLong(AMOUNT)));
                     metadata.put("amount_dollars", String.format("%.2f", arguments.getLong(AMOUNT) / 100.0));
-                    
-                    metadata.put("source","meter");
 
                     // Add timestamp
                     java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.US);

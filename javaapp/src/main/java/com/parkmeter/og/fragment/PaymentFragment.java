@@ -826,7 +826,7 @@ public class PaymentFragment extends Fragment {
             String.valueOf(parkingId) // parking_id
         );
         
-        // Call park_vehicle API
+        // Call park_vehicle API (only for zero amount payments)
         Park45ApiService apiService = Park45ApiClient.getInstance().getApiService();
         apiService.parkVehicle(request).enqueue(new retrofit2.Callback<ParkVehicleResponse>() {
             @Override
