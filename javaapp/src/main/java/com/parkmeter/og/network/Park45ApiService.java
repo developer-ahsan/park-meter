@@ -13,12 +13,15 @@ import com.parkmeter.og.model.ParkVehicleResponse;
 import com.parkmeter.og.model.EmailReceiptRequest;
 import com.parkmeter.og.model.Campaign;
 import com.parkmeter.og.model.CampaignRequest;
+import com.parkmeter.og.model.PaymentStatusResponse;
 
 import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 
 public interface Park45ApiService {
     
@@ -42,4 +45,7 @@ public interface Park45ApiService {
     
     @POST("current_compaign")
     Call<List<Campaign>> getCurrentCampaign(@Body CampaignRequest requestBody);
+    
+    @GET("getPaymentStatus/{paymentIntentId}")
+    Call<PaymentStatusResponse> getPaymentStatus(@Path("paymentIntentId") String paymentIntentId);
 } 

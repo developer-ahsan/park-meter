@@ -14,6 +14,7 @@ import com.parkmeter.og.model.OfflineBehaviorSelection;
 import com.parkmeter.og.model.Zone;
 import com.parkmeter.og.model.Rate;
 import com.parkmeter.og.model.RateStep;
+import com.parkmeter.og.fragment.TapDeviceDialogFragment;
 
 import com.parkmeter.og.utils.LiteralsHelper;
 import com.stripe.stripeterminal.Terminal;
@@ -57,6 +58,7 @@ public class DirectPaymentHandler implements PaymentIntentCallback {
     private Cancelable collectTask;
     private Handler timeoutHandler;
     private boolean isPaymentCompleted = false;
+    private String parkingId; // Store parking_id to pass to EmailReceiptFragment
     
     public DirectPaymentHandler(FragmentActivity activity, long amount, String currency, 
                                boolean skipTipping, boolean extendedAuth, boolean incrementalAuth, 
@@ -78,6 +80,38 @@ public class DirectPaymentHandler implements PaymentIntentCallback {
     }
     
     public void startPayment() {
+        // Show tap device dialog first
+        showTapDeviceDialog();
+    }
+    
+    private void showTapDeviceDialog() {
+        // Create and show the tap device dialog
+        TapDeviceDialogFragment dialog = TapDeviceDialogFragment.newInstance(
+            selectedZone,
+            selectedRate,
+            selectedRateStep,
+            amount
+        );
+        
+        // Set dismiss listener to proceed with payment intent creation
+        dialog.setOnDismissListener(new TapDeviceDialogFragment.OnDismissListener() {
+            @Override
+            public void onDialogDismissed() {
+                // Dialog auto-dismisses after 5 seconds, immediately proceed with Stripe payment intent
+                createPaymentIntent();
+            }
+        });
+        
+        // Show dialog if fragment manager is available
+        if (activity instanceof androidx.fragment.app.FragmentActivity) {
+            dialog.show(((androidx.fragment.app.FragmentActivity) activity).getSupportFragmentManager(), "TapDeviceDialog");
+        } else {
+            // Fallback: if dialog can't be shown, proceed with payment intent immediately
+            createPaymentIntent();
+        }
+    }
+    
+    private void createPaymentIntent() {
         // Start timeout handler
         startTimeoutHandler();
         
@@ -89,12 +123,15 @@ public class DirectPaymentHandler implements PaymentIntentCallback {
         
         // Get current time and calculate end time for metadata
         java.util.Date currentTime = new java.util.Date();
-        java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MMMM dd'st' yyyy, hh:mm a", java.util.Locale.US);
-        String fromTime = dateFormat.format(currentTime);
-        String toTime = calculateEndTime(currentTime, selectedRateStep.getTimeDesc());
+        
+        // Format dates in ISO 8601 format with timezone: '2025-12-24T15:19:00-05:00'
+        String fromTime = formatISO8601WithTimezone(currentTime);
+        java.util.Date endTime = calculateEndTimeDate(currentTime, selectedRateStep.getTimeDesc());
+        String toTime = formatISO8601WithTimezone(endTime);
         
         // Generate parking_id (6-digit random number between 100000 and 999999)
-        int parkingId = (int)(100000 + Math.random() * 900000);
+        int parkingIdInt = (int)(100000 + Math.random() * 900000);
+        parkingId = String.valueOf(parkingIdInt); // Store as instance variable
         
         // Add all park_vehicle fields to metadata
         // amount (in cents as string)
@@ -117,10 +154,10 @@ public class DirectPaymentHandler implements PaymentIntentCallback {
             metadata.put("city", "");
         }
         
-        // from (start time)
+        // from (start time in ISO 8601 format with timezone)
         metadata.put("from", fromTime);
         
-        // to (end time)
+        // to (end time in ISO 8601 format with timezone)
         metadata.put("to", toTime);
         
         // rate (rate ID)
@@ -139,31 +176,9 @@ public class DirectPaymentHandler implements PaymentIntentCallback {
         // source
         metadata.put("source", "meter");
         
-        // parking_id
-        metadata.put("parking_id", String.valueOf(parkingId));
+        // parking_id (as number string)
+        metadata.put("parking_id", parkingId);
         
-        // Additional metadata for Stripe dashboard (keeping existing fields for compatibility)
-        if (selectedZone.getZoneName() != null && !selectedZone.getZoneName().trim().isEmpty()) {
-            metadata.put("zone_name", selectedZone.getZoneName().trim());
-        }
-        if (selectedRate.getRateName() != null && !selectedRate.getRateName().trim().isEmpty()) {
-            metadata.put("rate_name", selectedRate.getRateName().trim());
-        }
-        if (selectedRateStep.getTimeDesc() != null && !selectedRateStep.getTimeDesc().trim().isEmpty()) {
-            metadata.put("time_description", selectedRateStep.getTimeDesc().trim());
-        }
-        if (selectedZone.getOrganization() != null && selectedZone.getOrganization().getOrgName() != null) {
-            metadata.put("organization", selectedZone.getOrganization().getOrgName().trim());
-        }
-        
-        // Add payment type and amount information
-        metadata.put("payment_type", "parking");
-        metadata.put("amount_cents", String.valueOf(amount));
-        metadata.put("amount_dollars", String.format("%.2f", amount / 100.0));
-        
-        // Add timestamp
-        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.US);
-        metadata.put("payment_timestamp", sdf.format(new java.util.Date()));
         
         // Create payment intent parameters with metadata (matching EventFragment logic)
         CardPresentParameters.Builder cardPresentParametersBuilder = new CardPresentParameters.Builder();
@@ -379,10 +394,11 @@ public class DirectPaymentHandler implements PaymentIntentCallback {
         }
         
         // Navigate to success screen - park_vehicle data is now in Stripe metadata
+        // Pass the parking_id (same as in metadata) to EmailReceiptFragment
         if (activity instanceof NavigationListener) {
             NavigationListener navigationListener = (NavigationListener) activity;
-            String parkId = paymentIntentId != null ? paymentIntentId : "";
-            navigationListener.onPaymentSuccessful(amount, parkId, paymentIntentId != null ? paymentIntentId : "");
+            String parkIdToPass = (parkingId != null && !parkingId.isEmpty()) ? parkingId : (paymentIntentId != null ? paymentIntentId : "");
+            navigationListener.onPaymentSuccessful(amount, parkIdToPass, paymentIntentId != null ? paymentIntentId : "");
         }
     }
     
@@ -418,6 +434,44 @@ public class DirectPaymentHandler implements PaymentIntentCallback {
     // Removed: callParkVehicleAPI method - park_vehicle data is now stored in Stripe metadata
     // All park_vehicle fields (plate, zone, city, from, to, rate, service_fee, org, source, parking_id)
     // are now included in the payment intent metadata created in startPayment()
+    
+    /**
+     * Format date in ISO 8601 format with timezone: '2025-12-24T15:19:00-05:00'
+     */
+    private String formatISO8601WithTimezone(java.util.Date date) {
+        java.text.SimpleDateFormat isoFormat = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", java.util.Locale.US);
+        return isoFormat.format(date);
+    }
+    
+    /**
+     * Calculate end time as Date object (for ISO 8601 formatting)
+     */
+    private java.util.Date calculateEndTimeDate(java.util.Date startTime, String timeDesc) {
+        try {
+            // Parse time description (e.g., "2 hours", "30 minutes")
+            String[] parts = timeDesc.toLowerCase().split(" ");
+            int duration = Integer.parseInt(parts[0]);
+            String unit = parts[1];
+            
+            java.util.Calendar calendar = java.util.Calendar.getInstance();
+            calendar.setTime(startTime);
+            
+            if (unit.contains("hour")) {
+                calendar.add(java.util.Calendar.HOUR_OF_DAY, duration);
+            } else if (unit.contains("minute")) {
+                calendar.add(java.util.Calendar.MINUTE, duration);
+            }
+            
+            return calendar.getTime();
+        } catch (Exception e) {
+            // Error calculating end time
+            // Fallback to current time + 1 hour
+            java.util.Calendar calendar = java.util.Calendar.getInstance();
+            calendar.setTime(startTime);
+            calendar.add(java.util.Calendar.HOUR_OF_DAY, 1);
+            return calendar.getTime();
+        }
+    }
     
     private String calculateEndTime(java.util.Date startTime, String timeDesc) {
         try {

@@ -836,9 +836,13 @@ public class PaymentFragment extends Fragment {
                         if (response.isSuccessful() && response.body() != null) {
                             ParkVehicleResponse parkResponse = response.body();
                             
-                            // Navigate to email receipt with _id (as required by email API)
+                            // Use locally generated parking_id (same one we sent in the API request)
+                            // This matches the parking_id that was created in the app
+                            String parkingIdToPass = String.valueOf(parkingId);
+                            
+                            // Navigate to email receipt with parking_id (same as created locally and sent to API)
                             if (navigationListener != null) {
-                                navigationListener.onPaymentSuccessful(0, parkResponse.getId(), "");
+                                navigationListener.onPaymentSuccessful(0, parkingIdToPass, "");
                             }
                         } else {
                             android.widget.Toast.makeText(getContext(), LiteralsHelper.getText(getContext(), "failed_to_process_parking"), android.widget.Toast.LENGTH_SHORT).show();

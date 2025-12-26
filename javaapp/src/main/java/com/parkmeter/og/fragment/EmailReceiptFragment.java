@@ -68,6 +68,7 @@ public class EmailReceiptFragment extends Fragment {
     private MaterialButton btnSendEmail;
     private MaterialButton btnCancel;
     private ImageView ivQrCode;
+    private android.widget.LinearLayout layoutQrCodeSection;
     
     // Timer
     private CountDownTimer countDownTimer;
@@ -109,7 +110,8 @@ public class EmailReceiptFragment extends Fragment {
 
         initializeViews(view);
         setupUI();
-        generateQRCode();
+        // Check payment status before showing QR code
+        checkPaymentStatusAndGenerateQR();
         applyTheming();
         setupClickListeners();
         startTimer();
@@ -123,6 +125,7 @@ public class EmailReceiptFragment extends Fragment {
         btnSendEmail = view.findViewById(R.id.btn_send_email);
         btnCancel = view.findViewById(R.id.btn_cancel);
         ivQrCode = view.findViewById(R.id.iv_qr_code);
+        layoutQrCodeSection = view.findViewById(R.id.layout_qr_code_section);
     }
 
     private void setupUI() {
@@ -144,15 +147,123 @@ public class EmailReceiptFragment extends Fragment {
         }
     }
 
+    /**
+     * Check payment status with retries before generating QR code
+     */
+    private void checkPaymentStatusAndGenerateQR() {
+        if (transactionId == null || transactionId.isEmpty()) {
+            Log.w(TAG, "Transaction ID is null or empty, cannot check payment status");
+            // Hide QR code section if no transaction ID
+            hideQRCodeSection();
+            return;
+        }
+        
+        // Hide QR code section initially, will show it when status is succeeded
+        hideQRCodeSection();
+        checkPaymentStatusWithRetries(0);
+    }
+    
+    /**
+     * Hide the entire QR code section including labels
+     */
+    private void hideQRCodeSection() {
+        if (layoutQrCodeSection != null) {
+            layoutQrCodeSection.setVisibility(View.GONE);
+        }
+    }
+    
+    /**
+     * Show the entire QR code section including labels
+     */
+    private void showQRCodeSection() {
+        if (layoutQrCodeSection != null) {
+            layoutQrCodeSection.setVisibility(View.VISIBLE);
+        }
+    }
+    
+    /**
+     * Check payment status with retry logic (3 retries with 3 second intervals)
+     */
+    private void checkPaymentStatusWithRetries(int attempt) {
+        final int MAX_RETRIES = 3;
+        final long RETRY_INTERVAL_MS = 3000; // 3 seconds
+        
+        if (attempt >= MAX_RETRIES) {
+            // Max retries reached, don't show QR code section
+            Log.w(TAG, "Payment status check failed after " + MAX_RETRIES + " retries, not showing QR code");
+            hideQRCodeSection();
+            return;
+        }
+        
+        Park45ApiService apiService = Park45ApiClient.getInstance().getApiService();
+        apiService.getPaymentStatus(transactionId).enqueue(new retrofit2.Callback<com.parkmeter.og.model.PaymentStatusResponse>() {
+            @Override
+            public void onResponse(retrofit2.Call<com.parkmeter.og.model.PaymentStatusResponse> call, retrofit2.Response<com.parkmeter.og.model.PaymentStatusResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    com.parkmeter.og.model.PaymentStatusResponse statusResponse = response.body();
+                    
+                    // Check if status is succeeded
+                    if (statusResponse.getStatus() != null && 
+                        "succeeded".equalsIgnoreCase(statusResponse.getStatus())) {
+                        // Payment succeeded, show QR code section and generate QR code
+                        Log.d(TAG, "Payment status succeeded, showing QR code section");
+                        showQRCodeSection();
+                        generateQRCode();
+                    } else {
+                        // Status not succeeded, retry if attempts remaining
+                        Log.d(TAG, "Payment status not succeeded (status: " + statusResponse.getStatus() + "), retrying... Attempt: " + (attempt + 1));
+                        hideQRCodeSection();
+                        if (getActivity() != null) {
+                            new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    checkPaymentStatusWithRetries(attempt + 1);
+                                }
+                            }, RETRY_INTERVAL_MS);
+                        }
+                    }
+                } else {
+                    // API call failed, retry if attempts remaining
+                    Log.w(TAG, "Payment status API call failed, retrying... Attempt: " + (attempt + 1));
+                    if (getActivity() != null) {
+                        new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                checkPaymentStatusWithRetries(attempt + 1);
+                            }
+                        }, RETRY_INTERVAL_MS);
+                    }
+                }
+            }
+            
+            @Override
+            public void onFailure(retrofit2.Call<com.parkmeter.og.model.PaymentStatusResponse> call, Throwable t) {
+                // Network error, retry if attempts remaining
+                Log.w(TAG, "Payment status API call error: " + t.getMessage() + ", retrying... Attempt: " + (attempt + 1));
+                if (getActivity() != null) {
+                    new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            checkPaymentStatusWithRetries(attempt + 1);
+                        }
+                    }, RETRY_INTERVAL_MS);
+                }
+            }
+        });
+    }
+    
     private void generateQRCode() {
-        if (parkingId == null || parkingId.isEmpty()) {
-            Log.w(TAG, "Parking ID is null or empty, cannot generate QR code");
+        if (transactionId == null || transactionId.isEmpty()) {
+            Log.w(TAG, "Transaction ID is null or empty, cannot generate QR code");
+            if (ivQrCode != null) {
+                ivQrCode.setVisibility(View.GONE);
+            }
             return;
         }
 
         try {
-            // Create the URL with parking ID
-            String qrUrl = "https://parkapp.ca/api/downloadParking/" + parkingId;
+            // Create the URL with transaction ID
+            String qrUrl = "https://parkapp.ca/api/downloadParking/" + transactionId;
             
             // Generate QR code
             QRCodeWriter writer = new QRCodeWriter();
@@ -172,6 +283,7 @@ public class EmailReceiptFragment extends Fragment {
             // Set the QR code to the ImageView
             if (ivQrCode != null) {
                 ivQrCode.setImageBitmap(bitmap);
+                ivQrCode.setVisibility(View.VISIBLE);
             }
             
             Log.d(TAG, "QR code generated successfully for URL: " + qrUrl);
