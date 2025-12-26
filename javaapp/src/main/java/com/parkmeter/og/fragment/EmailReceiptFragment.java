@@ -370,8 +370,8 @@ public class EmailReceiptFragment extends Fragment {
             return;
         }
         
-        if (parkingId == null || parkingId.isEmpty()) {
-            Toast.makeText(getContext(), LiteralsHelper.getText(getContext(), "parking_id_not_found"), Toast.LENGTH_SHORT).show();
+        if (transactionId == null || transactionId.isEmpty()) {
+            Toast.makeText(getContext(), LiteralsHelper.getText(getContext(), "transaction_id_not_found"), Toast.LENGTH_SHORT).show();
             return;
         }
         
@@ -382,7 +382,7 @@ public class EmailReceiptFragment extends Fragment {
         
         // Call the emailReceipt API
         Park45ApiService apiService = Park45ApiClient.getInstance().getApiService();
-        EmailReceiptRequest request = new EmailReceiptRequest(email, parkingId);
+        EmailReceiptRequest request = new EmailReceiptRequest(email, transactionId);
         
         apiService.emailReceipt(request).enqueue(new retrofit2.Callback<Void>() {
             @Override
