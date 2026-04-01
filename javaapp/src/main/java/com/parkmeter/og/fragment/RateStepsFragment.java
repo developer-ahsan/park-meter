@@ -431,7 +431,9 @@ public class RateStepsFragment extends Fragment {
                     if (child instanceof MaterialButton) {
                         MaterialButton btn = (MaterialButton) child;
                         RateStep step = (RateStep) btn.getTag();
-                        boolean selected = selectedRateStep != null && step == selectedRateStep;
+                        // Compare by value (time_desc and total) instead of reference to handle object recreation
+                        boolean selected = selectedRateStep != null && step != null && 
+                            isSameRateStep(step, selectedRateStep);
                         if (selected) {
                             btn.setBackgroundTintList(android.content.res.ColorStateList.valueOf(orgColor));
                             btn.setTextColor(getResources().getColor(android.R.color.white));
@@ -443,6 +445,17 @@ public class RateStepsFragment extends Fragment {
                 }
             }
         }
+    }
+    
+    /**
+     * Compare two rate steps by their unique properties to handle object reference issues
+     */
+    private boolean isSameRateStep(RateStep step1, RateStep step2) {
+        if (step1 == null || step2 == null) return false;
+        // Compare by time_desc and total as unique identifiers
+        String timeDesc1 = step1.getTimeDesc() != null ? step1.getTimeDesc() : "";
+        String timeDesc2 = step2.getTimeDesc() != null ? step2.getTimeDesc() : "";
+        return timeDesc1.equals(timeDesc2) && step1.getTotal() == step2.getTotal();
     }
 
     private void updateSummaryCard(RateStep step) {
@@ -507,6 +520,34 @@ public class RateStepsFragment extends Fragment {
         if (selectedRateStep == null || selectedRate == null || selectedZone == null || vehicleNumber == null) {
             Toast.makeText(requireContext(), LiteralsHelper.getText(getContext(), "missing_required_data"), Toast.LENGTH_SHORT).show();
             return;
+        }
+        
+        // Validate that selectedRateStep exists in the current rateSteps list
+        // This ensures we're using the correct rate step and not a stale reference
+        boolean isValidStep = false;
+        for (RateStep step : rateSteps) {
+            if (isSameRateStep(step, selectedRateStep)) {
+                isValidStep = true;
+                // Update selectedRateStep to use the actual object from the list to avoid reference issues
+                selectedRateStep = step;
+                break;
+            }
+        }
+        
+        if (!isValidStep && !rateSteps.isEmpty()) {
+            // If selected rate step is not found, default to first step and log warning
+            Log.w(TAG, "Selected rate step not found in current list, using first step. Selected: " + 
+                (selectedRateStep != null ? selectedRateStep.getTimeDesc() : "null"));
+            selectedRateStep = rateSteps.get(0);
+            updateSummaryCard(selectedRateStep);
+            updateBottomButton(selectedRateStep);
+            refreshButtonsSelection();
+        }
+
+        // Log the selected rate step details for debugging
+        if (selectedRateStep != null) {
+            Log.d(TAG, "Processing payment with rate step - Time: " + selectedRateStep.getTimeDesc() + 
+                ", Total: " + selectedRateStep.getTotal() + ", Rate ID: " + selectedRate.getId());
         }
 
         // Disable button to prevent multiple calls

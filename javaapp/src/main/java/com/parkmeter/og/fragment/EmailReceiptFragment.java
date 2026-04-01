@@ -205,10 +205,14 @@ public class EmailReceiptFragment extends Fragment {
                     // Check if status is succeeded
                     if (statusResponse.getStatus() != null && 
                         "succeeded".equalsIgnoreCase(statusResponse.getStatus())) {
-                        // Payment succeeded, show QR code section and generate QR code
-                        Log.d(TAG, "Payment status succeeded, showing QR code section");
-                        showQRCodeSection();
-                        generateQRCode();
+                        // Payment succeeded; show QR (download parking) only when we have parking_id (same as sent to backend)
+                        if (parkingId != null && !parkingId.isEmpty()) {
+                            Log.d(TAG, "Payment status succeeded, showing QR code section for parking_id: " + parkingId);
+                            showQRCodeSection();
+                            generateQRCode();
+                        } else {
+                            hideQRCodeSection();
+                        }
                     } else {
                         // Status not succeeded, retry if attempts remaining
                         Log.d(TAG, "Payment status not succeeded (status: " + statusResponse.getStatus() + "), retrying... Attempt: " + (attempt + 1));
@@ -253,8 +257,9 @@ public class EmailReceiptFragment extends Fragment {
     }
     
     private void generateQRCode() {
-        if (transactionId == null || transactionId.isEmpty()) {
-            Log.w(TAG, "Transaction ID is null or empty, cannot generate QR code");
+        // Use parking_id (same as sent to backend in payment handler) for download parking URL
+        if (parkingId == null || parkingId.isEmpty()) {
+            Log.w(TAG, "Parking ID is null or empty, cannot generate QR code for download parking");
             if (ivQrCode != null) {
                 ivQrCode.setVisibility(View.GONE);
             }
@@ -262,8 +267,8 @@ public class EmailReceiptFragment extends Fragment {
         }
 
         try {
-            // Create the URL with transaction ID
-            String qrUrl = "https://parkapp.ca/api/downloadParking/" + transactionId;
+            // Create the URL with parking_id (same as sent to backend)
+            String qrUrl = "https://parkapp.ca/api/downloadParking/" + parkingId;
             
             // Generate QR code
             QRCodeWriter writer = new QRCodeWriter();

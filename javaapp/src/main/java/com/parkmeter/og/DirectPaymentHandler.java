@@ -115,6 +115,15 @@ public class DirectPaymentHandler implements PaymentIntentCallback {
         // Start timeout handler
         startTimeoutHandler();
         
+        // Log the rate step being used for payment to help debug selection issues
+        if (selectedRateStep != null) {
+            Log.d(TAG, "Creating payment intent with rate step - Time: " + selectedRateStep.getTimeDesc() + 
+                ", Total: " + selectedRateStep.getTotal() + " cents, Service Fee: " + selectedRateStep.getServiceFee() + 
+                ", Rate ID: " + (selectedRate != null ? selectedRate.getId() : "null"));
+        } else {
+            Log.e(TAG, "ERROR: selectedRateStep is null when creating payment intent!");
+        }
+        
         // Create comprehensive metadata with parking details for Stripe dashboard
         java.util.Map<String, String> metadata = new java.util.HashMap<>();
         
@@ -134,8 +143,19 @@ public class DirectPaymentHandler implements PaymentIntentCallback {
         parkingId = String.valueOf(parkingIdInt); // Store as instance variable
         
         // Add all park_vehicle fields to metadata
-        // amount (in cents as string)
-        metadata.put("amount", String.valueOf(selectedRateStep.getTotal()));
+        // amount (in cents as string) - using selectedRateStep.getTotal() to ensure correct amount
+        long amountToUse = selectedRateStep != null ? selectedRateStep.getTotal() : amount;
+        
+        // Validate that payment amount matches selected rate step amount
+        if (selectedRateStep != null && amount != selectedRateStep.getTotal()) {
+            Log.w(TAG, "WARNING: Payment amount mismatch! Payment amount: " + amount + 
+                ", Rate step total: " + selectedRateStep.getTotal() + 
+                ". Using rate step total for metadata.");
+            // Use the rate step amount for consistency
+            amountToUse = selectedRateStep.getTotal();
+        }
+        
+        metadata.put("amount", String.valueOf(amountToUse));
         
         // plate
         if (plateNumber != null && !plateNumber.trim().isEmpty()) {
