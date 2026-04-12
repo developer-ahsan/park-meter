@@ -804,8 +804,8 @@ public class PaymentFragment extends Fragment {
         java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MMMM dd'st' yyyy, hh:mm a", java.util.Locale.US);
         String fromTime = dateFormat.format(currentTime);
         
-        // Calculate end time based on time description
-        String toTime = calculateEndTime(currentTime, selectedRateStep.getTimeDesc());
+        // Calculate end time from selected rate step (exact selected clock time when available)
+        String toTime = calculateSelectedEndTime(currentTime);
         
         // Generate parking_id (6-digit random number between 100000 and 999999)
         int parkingId = (int)(100000 + Math.random() * 900000);
@@ -891,6 +891,61 @@ public class PaymentFragment extends Fragment {
             java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MMMM dd'st' yyyy, hh:mm a", java.util.Locale.US);
             return dateFormat.format(calendar.getTime());
         }
+    }
+
+    /**
+     * Resolve end time from selected rate step's displayed clock time (time_desc + day).
+     * Falls back to duration parsing when needed.
+     */
+    private String calculateSelectedEndTime(java.util.Date startTime) {
+        if (selectedRateStep == null) {
+            return calculateEndTime(startTime, "1 hour");
+        }
+
+        String rawTimeDesc = selectedRateStep.getTimeDesc();
+        if (rawTimeDesc != null && !rawTimeDesc.trim().isEmpty()) {
+            try {
+                String normalizedTime = rawTimeDesc
+                    .replace("\n", " ")
+                    .replaceAll("\\s+", " ")
+                    .trim()
+                    .toUpperCase(java.util.Locale.US);
+
+                java.text.SimpleDateFormat timeFormat = new java.text.SimpleDateFormat("hh:mm a", java.util.Locale.US);
+                timeFormat.setLenient(true);
+                java.util.Date parsedTime = timeFormat.parse(normalizedTime);
+
+                if (parsedTime != null) {
+                    java.util.Calendar nowCal = java.util.Calendar.getInstance();
+                    nowCal.setTime(startTime);
+
+                    java.util.Calendar parsedCal = java.util.Calendar.getInstance();
+                    parsedCal.setTime(parsedTime);
+
+                    java.util.Calendar endCal = java.util.Calendar.getInstance();
+                    endCal.setTime(startTime);
+                    endCal.set(java.util.Calendar.HOUR_OF_DAY, parsedCal.get(java.util.Calendar.HOUR_OF_DAY));
+                    endCal.set(java.util.Calendar.MINUTE, parsedCal.get(java.util.Calendar.MINUTE));
+                    endCal.set(java.util.Calendar.SECOND, 0);
+                    endCal.set(java.util.Calendar.MILLISECOND, 0);
+
+                    String day = selectedRateStep.getDay();
+                    if (day != null && day.toLowerCase(java.util.Locale.US).contains("tomorrow")) {
+                        endCal.add(java.util.Calendar.DAY_OF_YEAR, 1);
+                    } else if (!endCal.after(nowCal)) {
+                        // If selected clock time is earlier than "now", it belongs to next day.
+                        endCal.add(java.util.Calendar.DAY_OF_YEAR, 1);
+                    }
+
+                    java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MMMM dd'st' yyyy, hh:mm a", java.util.Locale.US);
+                    return dateFormat.format(endCal.getTime());
+                }
+            } catch (Exception e) {
+                Log.w(TAG, "Failed to parse selected end time '" + rawTimeDesc + "', falling back to duration logic.");
+            }
+        }
+
+        return calculateEndTime(startTime, rawTimeDesc != null ? rawTimeDesc : "1 hour");
     }
 
     @Override
