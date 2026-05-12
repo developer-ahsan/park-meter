@@ -46,6 +46,7 @@ public class HomeFragment extends Fragment {
 	private ImageView appLogo;
 	private com.google.android.material.progressindicator.CircularProgressIndicator appLogoLoader;
 	private TextView tvAppName;
+	private TextView tvVersionFooter;
 	private TextView tvSelectedZoneDisplay;
 	private MaterialButton enterVehicleButton;
 	private ImageView settingsIcon;
@@ -95,7 +96,11 @@ public class HomeFragment extends Fragment {
 		appLogo = view.findViewById(R.id.app_logo);
 		appLogoLoader = view.findViewById(R.id.app_logo_loader);
 		tvAppName = view.findViewById(R.id.tv_app_name);
+		tvVersionFooter = view.findViewById(R.id.tv_version_footer);
 		tvSelectedZoneDisplay = view.findViewById(R.id.tv_selected_zone_display);
+		if (tvVersionFooter != null) {
+			tvVersionFooter.setText("v1.0.0");
+		}
 		enterVehicleButton = view.findViewById(R.id.btn_enter_vehicle_number);
 		settingsIcon = view.findViewById(R.id.settings_icon);
 		cardPrimaryAction = view.findViewById(R.id.card_primary_action);
