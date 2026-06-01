@@ -99,7 +99,7 @@ public class HomeFragment extends Fragment {
 		tvVersionFooter = view.findViewById(R.id.tv_version_footer);
 		tvSelectedZoneDisplay = view.findViewById(R.id.tv_selected_zone_display);
 		if (tvVersionFooter != null) {
-			tvVersionFooter.setText("v1.0.0");
+			tvVersionFooter.setText("v1.0.1");
 		}
 		enterVehicleButton = view.findViewById(R.id.btn_enter_vehicle_number);
 		settingsIcon = view.findViewById(R.id.settings_icon);

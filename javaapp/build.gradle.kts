@@ -19,8 +19,8 @@ android {
         applicationId = "com.parkmeter.og"
         minSdk = minSdkVersion
         targetSdk = latestSdkVersion
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 2
+        versionName = "1.0.1"
 
         val backendUrl = project.property("EXAMPLE_BACKEND_URL").toString().trim('"')
         buildConfigField("String", "EXAMPLE_BACKEND_URL", "\"$backendUrl\"")

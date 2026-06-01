@@ -127,16 +127,24 @@ public class DirectPaymentHandler implements PaymentIntentCallback {
         // Create comprehensive metadata with parking details for Stripe dashboard
         java.util.Map<String, String> metadata = new java.util.HashMap<>();
         
-        // Create a detailed description for the payment intent
-        String description = createPaymentDescription();
-        
-        // Get current time and calculate end time for metadata
-        java.util.Date currentTime = new java.util.Date();
-        
+        // Use server-provided current_time as from, with device clock as fallback
+        java.util.Date currentTime = null;
+        if (selectedRateStep != null && selectedRateStep.getCurrentTime() != null) {
+            currentTime = parseFullDateTime(selectedRateStep.getCurrentTime());
+        }
+        if (currentTime == null) {
+            currentTime = new java.util.Date();
+        }
+
+        // Use server-provided time_desc as to (full date+time from API)
+        java.util.Date endTime = calculateSelectedEndTimeDate(currentTime);
+
         // Format dates in ISO 8601 format with timezone: '2025-12-24T15:19:00-05:00'
         String fromTime = formatISO8601WithTimezone(currentTime);
-        java.util.Date endTime = calculateSelectedEndTimeDate(currentTime);
         String toTime = formatISO8601WithTimezone(endTime);
+
+        // Create a detailed description for the payment intent
+        String description = createPaymentDescription(currentTime, endTime);
         
         // Generate parking_id (6-digit random number between 100000 and 999999)
         int parkingIdInt = (int)(100000 + Math.random() * 900000);
@@ -232,14 +240,10 @@ public class DirectPaymentHandler implements PaymentIntentCallback {
      * Create a detailed description for the payment intent that will show in Stripe dashboard
      * Format: {plate} is parked from {from} to {to} in {zone_name}, {org_name} - meter
      */
-    private String createPaymentDescription() {
-        // Get current time and calculate end time
-        java.util.Date currentTime = new java.util.Date();
-        java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MMMM dd'st' yyyy, hh:mm a", java.util.Locale.US);
+    private String createPaymentDescription(java.util.Date currentTime, java.util.Date endTime) {
+        java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MMM dd yyyy, hh:mm a", java.util.Locale.US);
         String fromTime = dateFormat.format(currentTime);
-        
-        // Calculate end time based on time description
-        String toTime = calculateEndTime(currentTime, selectedRateStep.getTimeDesc());
+        String toTime = dateFormat.format(endTime);
         
         StringBuilder description = new StringBuilder();
         
@@ -494,8 +498,9 @@ public class DirectPaymentHandler implements PaymentIntentCallback {
     }
 
     /**
-     * Resolve end time from selected rate step's displayed clock time (time_desc + day).
-     * Falls back to duration parsing when needed.
+     * Parse the end time directly from time_desc which contains the full date+time
+     * from the server (e.g. "May 12th 2026, 10:30 am").
+     * Falls back to duration parsing if the full-date parse fails.
      */
     private java.util.Date calculateSelectedEndTimeDate(java.util.Date startTime) {
         if (selectedRateStep == null) {
@@ -504,48 +509,37 @@ public class DirectPaymentHandler implements PaymentIntentCallback {
 
         String rawTimeDesc = selectedRateStep.getTimeDesc();
         if (rawTimeDesc != null && !rawTimeDesc.trim().isEmpty()) {
-            try {
-                String normalizedTime = rawTimeDesc
-                    .replace("\n", " ")
-                    .replaceAll("\\s+", " ")
-                    .trim()
-                    .toUpperCase(java.util.Locale.US);
-
-                java.text.SimpleDateFormat timeFormat = new java.text.SimpleDateFormat("hh:mm a", java.util.Locale.US);
-                timeFormat.setLenient(true);
-                java.util.Date parsedTime = timeFormat.parse(normalizedTime);
-
-                if (parsedTime != null) {
-                    java.util.Calendar nowCal = java.util.Calendar.getInstance();
-                    nowCal.setTime(startTime);
-
-                    java.util.Calendar parsedCal = java.util.Calendar.getInstance();
-                    parsedCal.setTime(parsedTime);
-
-                    java.util.Calendar endCal = java.util.Calendar.getInstance();
-                    endCal.setTime(startTime);
-                    endCal.set(java.util.Calendar.HOUR_OF_DAY, parsedCal.get(java.util.Calendar.HOUR_OF_DAY));
-                    endCal.set(java.util.Calendar.MINUTE, parsedCal.get(java.util.Calendar.MINUTE));
-                    endCal.set(java.util.Calendar.SECOND, 0);
-                    endCal.set(java.util.Calendar.MILLISECOND, 0);
-
-                    String day = selectedRateStep.getDay();
-                    if (day != null && day.toLowerCase(java.util.Locale.US).contains("tomorrow")) {
-                        endCal.add(java.util.Calendar.DAY_OF_YEAR, 1);
-                    } else if (!endCal.after(nowCal)) {
-                        // If selected clock time is earlier than "now", it belongs to next day.
-                        endCal.add(java.util.Calendar.DAY_OF_YEAR, 1);
-                    }
-
-                    return endCal.getTime();
-                }
-            } catch (Exception e) {
-                Log.w(TAG, "Failed to parse selected end time '" + rawTimeDesc + "', falling back to duration logic.");
+            java.util.Date parsed = parseFullDateTime(rawTimeDesc);
+            if (parsed != null) {
+                return parsed;
             }
         }
 
-        // Fallback for duration-style values like "2 hours"
+        // Fallback for duration-style values like "2 hours" or unparseable formats
         return calculateEndTimeDate(startTime, rawTimeDesc != null ? rawTimeDesc : "1 hour");
+    }
+
+    /**
+     * Parse a full date+time string from the API (e.g. "May 12th 2026, 10:30 am").
+     * Strips ordinal suffixes (st/nd/rd/th) before parsing.
+     * Returns null if parsing fails.
+     */
+    private java.util.Date parseFullDateTime(String dateTimeStr) {
+        try {
+            // Strip ordinal suffixes: "12th" → "12", "1st" → "1", "2nd" → "2", "3rd" → "3"
+            String cleaned = dateTimeStr
+                .replaceAll("(\\d+)(st|nd|rd|th)", "$1")
+                .replace("\n", " ")
+                .replaceAll("\\s+", " ")
+                .trim();
+
+            java.text.SimpleDateFormat fullFormat = new java.text.SimpleDateFormat("MMM dd yyyy, hh:mm a", java.util.Locale.US);
+            fullFormat.setLenient(false);
+            return fullFormat.parse(cleaned);
+        } catch (Exception e) {
+            Log.w(TAG, "Failed to parse full date from time_desc: '" + dateTimeStr + "'");
+            return null;
+        }
     }
     
     private String calculateEndTime(java.util.Date startTime, String timeDesc) {
@@ -564,20 +558,17 @@ public class DirectPaymentHandler implements PaymentIntentCallback {
                 calendar.add(java.util.Calendar.MINUTE, duration);
             }
             
-            java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MMMM dd'st' yyyy, hh:mm a", java.util.Locale.US);
+            java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MMM dd yyyy, hh:mm a", java.util.Locale.US);
             return dateFormat.format(calendar.getTime());
         } catch (Exception e) {
-            // Error calculating end time
             // Fallback to current time + 1 hour
             java.util.Calendar calendar = java.util.Calendar.getInstance();
             calendar.setTime(startTime);
             calendar.add(java.util.Calendar.HOUR_OF_DAY, 1);
-            java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MMMM dd'st' yyyy, hh:mm a", java.util.Locale.US);
+            java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MMM dd yyyy, hh:mm a", java.util.Locale.US);
             return dateFormat.format(calendar.getTime());
         }
     }
-    
-
     
     public void cancelPayment() {
         // Payment cancelled by user");
