@@ -186,6 +186,7 @@ public class DiscoveryFragment extends Fragment implements DiscoveryListener, Mo
                     activity.runOnUiThread(() -> {
                         viewModel.isConnecting.setValue(false);
                         viewModel.isUpdating.setValue(false);
+                        activity.configureTapToPayUX();
                         activity.onConnectReader();
                     });
                 }

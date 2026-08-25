@@ -314,6 +314,10 @@ public class TerminalFragment extends Fragment implements DiscoveryListener {
             public void onSuccess(@NotNull Reader connectedReader) {
                 // Background auto-connection successful
                 viewModel.setConnected(connectedReader);
+                Activity activity = getActivity();
+                if (activity instanceof MainActivity) {
+                    activity.runOnUiThread(() -> ((MainActivity) activity).configureTapToPayUX());
+                }
             }
 
             @Override

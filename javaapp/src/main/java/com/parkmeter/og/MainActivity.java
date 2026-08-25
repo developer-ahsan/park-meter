@@ -98,6 +98,7 @@ public class MainActivity extends AppCompatActivity implements
                     }
                 }));
                 Log.d("MainActivity", "Terminal initialized successfully in onCreate");
+                configureTapToPayUX();
             } catch (TerminalException e) {
                 Log.e("MainActivity", "Failed to initialize Terminal: " + e.getMessage());
                 throw new RuntimeException(e);
