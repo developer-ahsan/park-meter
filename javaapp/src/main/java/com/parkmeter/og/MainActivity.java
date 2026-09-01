@@ -64,6 +64,7 @@ import com.stripe.stripeterminal.log.LogLevel;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @OptIn(markerClass = OfflineMode.class)
 public class MainActivity extends AppCompatActivity implements
@@ -89,9 +90,13 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         
         // Initialize Terminal SDK (per Stripe support recommendation)
+        // VERBOSE logging is very high volume with a connected Tap to Pay reader; keep it
+        // for debug builds only so release doesn't pay the sustained main-thread logging
+        // cost over long-running sessions.
+        LogLevel terminalLogLevel = BuildConfig.DEBUG ? LogLevel.VERBOSE : LogLevel.ERROR;
         if (!Terminal.isInitialized()) {
             try {
-                Terminal.init(getApplicationContext(), LogLevel.VERBOSE, new TokenProvider(), TerminalEventListener.instance, new OfflineModeHandler(new OfflineModeHandler.Callback() {
+                Terminal.init(getApplicationContext(), terminalLogLevel, new TokenProvider(), TerminalEventListener.instance, new OfflineModeHandler(new OfflineModeHandler.Callback() {
                     @Override
                     public void makeToast(String message) {
                         // Handle toast messages
@@ -148,12 +153,28 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-        
-        // Download fresh literals every time the app comes to foreground
-        downloadFreshLiterals();
-        
+
+        // Refresh literals on foreground, but throttled - this used to fire a full
+        // Google Sheets download + reparse + file rewrite on every single resume,
+        // including every return from the Stripe Tap to Pay UI during a payment.
+        maybeDownloadFreshLiterals();
+
         // NOTE: In v5.0.0, Terminal initializes lazily. Don't call configureTapToPayUX() here.
         // It will be called after reader connection in PaymentFragment/TerminalFragment/DiscoveryFragment
+    }
+
+    private static final long LITERALS_REFRESH_MIN_INTERVAL_MS = TimeUnit.MINUTES.toMillis(5);
+    private static volatile long lastLiteralsFetchMs = 0L;
+
+    private void maybeDownloadFreshLiterals() {
+        long now = System.currentTimeMillis();
+        if (now - lastLiteralsFetchMs < LITERALS_REFRESH_MIN_INTERVAL_MS) {
+            Log.d("MainActivity", "Skipping literals refresh - last fetch was "
+                    + (now - lastLiteralsFetchMs) + "ms ago");
+            return;
+        }
+        lastLiteralsFetchMs = now;
+        downloadFreshLiterals();
     }
 
     @Override
@@ -409,20 +430,9 @@ public class MainActivity extends AppCompatActivity implements
      */
     @Override
     public void onPaymentSuccessful(long amount, String parkedId, String transactionId) {
-        
-        // Hide overlay loader from PaymentFragment if it's the current fragment
-        try {
-            List<Fragment> fragments = getSupportFragmentManager().getFragments();
-            for (Fragment fragment : fragments) {
-                if (fragment instanceof PaymentFragment) {
-                    ((PaymentFragment) fragment).hideOverlayLoaderPublic();
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            // Error hiding overlay loader
-        }
-        
+        // PaymentFragment's overlay loader is a child of its own root view, so replacing
+        // the fragment below tears the overlay down with it - no manual cleanup needed here.
+
         // Navigate to email receipt page
         EmailReceiptFragment emailReceiptFragment = EmailReceiptFragment.newInstance(amount, parkedId, transactionId);
         navigateTo(EmailReceiptFragment.TAG, emailReceiptFragment, true, false); // Don't add to back stack
@@ -443,20 +453,9 @@ public class MainActivity extends AppCompatActivity implements
      */
     @Override
     public void onCancelCollectPaymentMethod() {
-        
-        // Hide overlay loader from PaymentFragment if it's the current fragment
-        try {
-            List<Fragment> fragments = getSupportFragmentManager().getFragments();
-            for (Fragment fragment : fragments) {
-                if (fragment instanceof PaymentFragment) {
-                    ((PaymentFragment) fragment).hideOverlayLoaderPublic();
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            // Error hiding overlay loader
-        }
-        
+        // PaymentFragment's overlay loader is a child of its own root view, so replacing
+        // the fragment below tears the overlay down with it - no manual cleanup needed here.
+
         // Show payment cancelled message
         Toast.makeText(this, LiteralsHelper.getText(this, "payment_cancelled"), Toast.LENGTH_SHORT).show();
         

@@ -6,12 +6,21 @@ import android.util.Log;
 
 import com.parkmeter.og.StripeTerminalApplication;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * Enhanced helper class to access dynamic literals with string resource fallback
  * and memory leak prevention
  */
 public class LiteralsHelper {
     private static final String TAG = "LiteralsHelper";
+
+    // Resources.getIdentifier() is a slow name-based lookup and getText() falls back to it
+    // on every cache miss for a dynamic literal - which happens for every label on every
+    // UI refresh. Cache key -> resource id (0 == not found) so it runs once per key per
+    // process instead of once per call.
+    private static final Map<String, Integer> stringResourceIdCache = new ConcurrentHashMap<>();
 
     /**
      * Get text for a given key using the current language with fallback to string resources
@@ -75,7 +84,7 @@ public class LiteralsHelper {
 
         try {
             Resources resources = context.getResources();
-            int resourceId = resources.getIdentifier(key, "string", context.getPackageName());
+            int resourceId = resolveStringResourceId(context, resources, key);
             if (resourceId != 0) {
                 return resources.getString(resourceId);
             }
@@ -85,6 +94,21 @@ public class LiteralsHelper {
 
         // Final fallback to the key itself
         return key;
+    }
+
+    /**
+     * Resolve a string resource id for the given key, caching the result (including
+     * misses, cached as 0) so the underlying getIdentifier() lookup runs at most once per
+     * key per process.
+     */
+    private static int resolveStringResourceId(Context context, Resources resources, String key) {
+        Integer cached = stringResourceIdCache.get(key);
+        if (cached != null) {
+            return cached;
+        }
+        int resourceId = resources.getIdentifier(key, "string", context.getPackageName());
+        stringResourceIdCache.put(key, resourceId);
+        return resourceId;
     }
 
     /**
@@ -114,8 +138,7 @@ public class LiteralsHelper {
 
         try {
             Resources resources = context.getResources();
-            int resourceId = resources.getIdentifier(key, "string", context.getPackageName());
-            return resourceId != 0;
+            return resolveStringResourceId(context, resources, key) != 0;
         } catch (Exception e) {
             Log.w(TAG, "Could not check string resource existence: " + key + ", error: " + e.getMessage());
             return false;

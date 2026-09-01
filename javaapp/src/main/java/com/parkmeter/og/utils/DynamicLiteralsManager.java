@@ -21,8 +21,11 @@ public class DynamicLiteralsManager {
     private final Context context;
     private final LiteralsDownloadService downloadService;
     private Map<String, Literal> literalsMap;
-    private String currentLanguage = "en";
-    private boolean isInitialized = false;
+    private volatile String currentLanguage = "en";
+    // Set from a background thread (initialize()/downloadFreshLiterals() both run off the
+    // main thread) and read from the main thread via getText()/isInitialized() - must be
+    // volatile for the write to be visible without relying on incidental synchronization.
+    private volatile boolean isInitialized = false;
     private volatile boolean isDownloading = false;
 
     private DynamicLiteralsManager(Context context) {

@@ -19,8 +19,8 @@ android {
         applicationId = "com.parkmeter.og"
         minSdk = minSdkVersion
         targetSdk = latestSdkVersion
-        versionCode = 2
-        versionName = "1.0.1"
+        versionCode = 3
+        versionName = "1.0.2"
 
         val backendUrl = project.property("EXAMPLE_BACKEND_URL").toString().trim('"')
         buildConfigField("String", "EXAMPLE_BACKEND_URL", "\"$backendUrl\"")
@@ -56,7 +56,7 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            // signingConfig = signingConfigs.getByName("release") // Temporarily disabled for build
+            signingConfig = signingConfigs.getByName("release")
             isDebuggable = false
             isJniDebuggable = false
             isPseudoLocalesEnabled = false
@@ -73,6 +73,15 @@ android {
             manifestPlaceholders["appName"] = "Parkapp Meter (Debug)"
             buildConfigField("boolean", "DEBUG", "true")
             buildConfigField("boolean", "ENABLE_LOGGING", "true")
+        }
+    }
+
+    applicationVariants.all {
+        val variant = this
+        variant.outputs.all {
+            val output = this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
+            output.outputFileName =
+                "parkapp-meter-${variant.versionName}-${variant.buildType.name}.apk"
         }
     }
 }

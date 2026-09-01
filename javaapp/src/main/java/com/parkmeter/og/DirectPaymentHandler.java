@@ -406,19 +406,25 @@ public class DirectPaymentHandler implements PaymentIntentCallback {
         }
         
         // Capture payment intent immediately after confirmation (matching EventFragment logic)
+        // Run off the main thread - this is a blocking network call and must never
+        // block the UI thread (Stripe delivers this callback on the main thread).
         String paymentIntentId = paymentIntent.getId();
         if (paymentIntentId != null) {
-            try {
-                // Capturing payment intent: " + paymentIntentId);
-                com.parkmeter.og.network.ApiClient.capturePaymentIntent(paymentIntentId);
-                // Payment captured successfully");
-            } catch (IOException e) {
-                // Failed to capture payment", e);
-            }
+            final String captureId = paymentIntentId;
+            new Thread(() -> {
+                try {
+                    // Capturing payment intent: " + captureId);
+                    com.parkmeter.og.network.ApiClient.capturePaymentIntentWithRetry(captureId, 3);
+                    // Payment captured successfully");
+                } catch (IOException e) {
+                    Log.e(TAG, "Failed to capture payment intent: " + captureId, e);
+                }
+            }).start();
         }
-        
+
         // Navigate to success screen - park_vehicle data is now in Stripe metadata
         // Pass the parking_id (same as in metadata) to EmailReceiptFragment
+        // Navigate immediately; the receipt screen does not depend on capture completing.
         if (activity instanceof NavigationListener) {
             NavigationListener navigationListener = (NavigationListener) activity;
             String parkIdToPass = (parkingId != null && !parkingId.isEmpty()) ? parkingId : (paymentIntentId != null ? paymentIntentId : "");

@@ -74,6 +74,11 @@ public class EmailReceiptFragment extends Fragment {
     private CountDownTimer countDownTimer;
     private boolean isTimerRunning = false;
 
+    // Handler used for the payment-status retry chain in checkPaymentStatusWithRetries().
+    // A single field so pending retries can be cancelled if the fragment is torn down
+    // before the (bounded, max 3) retry chain finishes.
+    private final android.os.Handler retryHandler = new android.os.Handler(android.os.Looper.getMainLooper());
+
     public static EmailReceiptFragment newInstance(long amount, String parkingId, String transactionId) {
         EmailReceiptFragment fragment = new EmailReceiptFragment();
         Bundle args = new Bundle();
@@ -217,40 +222,25 @@ public class EmailReceiptFragment extends Fragment {
                         // Status not succeeded, retry if attempts remaining
                         Log.d(TAG, "Payment status not succeeded (status: " + statusResponse.getStatus() + "), retrying... Attempt: " + (attempt + 1));
                         hideQRCodeSection();
-                        if (getActivity() != null) {
-                            new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    checkPaymentStatusWithRetries(attempt + 1);
-                                }
-                            }, RETRY_INTERVAL_MS);
+                        if (isAdded()) {
+                            retryHandler.postDelayed(() -> checkPaymentStatusWithRetries(attempt + 1), RETRY_INTERVAL_MS);
                         }
                     }
                 } else {
                     // API call failed, retry if attempts remaining
                     Log.w(TAG, "Payment status API call failed, retrying... Attempt: " + (attempt + 1));
-                    if (getActivity() != null) {
-                        new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                checkPaymentStatusWithRetries(attempt + 1);
-                            }
-                        }, RETRY_INTERVAL_MS);
+                    if (isAdded()) {
+                        retryHandler.postDelayed(() -> checkPaymentStatusWithRetries(attempt + 1), RETRY_INTERVAL_MS);
                     }
                 }
             }
-            
+
             @Override
             public void onFailure(retrofit2.Call<com.parkmeter.og.model.PaymentStatusResponse> call, Throwable t) {
                 // Network error, retry if attempts remaining
                 Log.w(TAG, "Payment status API call error: " + t.getMessage() + ", retrying... Attempt: " + (attempt + 1));
-                if (getActivity() != null) {
-                    new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            checkPaymentStatusWithRetries(attempt + 1);
-                        }
-                    }, RETRY_INTERVAL_MS);
+                if (isAdded()) {
+                    retryHandler.postDelayed(() -> checkPaymentStatusWithRetries(attempt + 1), RETRY_INTERVAL_MS);
                 }
             }
         });
@@ -437,6 +427,8 @@ public class EmailReceiptFragment extends Fragment {
         if (countDownTimer != null) {
             countDownTimer.cancel();
         }
+        // Cancel any pending payment-status retry
+        retryHandler.removeCallbacksAndMessages(null);
     }
 
     @Override

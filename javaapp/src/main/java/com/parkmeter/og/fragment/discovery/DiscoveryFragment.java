@@ -147,6 +147,29 @@ public class DiscoveryFragment extends Fragment implements DiscoveryListener, Mo
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // startDiscovery() passes `this` fragment directly to the SDK as the
+        // DiscoveryListener. The only cancellation path in this file is the Cancel button
+        // click handler above - navigating away any other way (system back, another
+        // screen replacing this one) leaves Terminal holding a live reference to this
+        // (now destroyed) fragment for as long as discovery keeps running.
+        if (viewModel.discoveryTask != null) {
+            viewModel.discoveryTask.cancel(new Callback() {
+                @Override
+                public void onSuccess() {
+                    viewModel.discoveryTask = null;
+                }
+
+                @Override
+                public void onFailure(@NotNull TerminalException e) {
+                    viewModel.discoveryTask = null;
+                }
+            });
+        }
+    }
+
+    @Override
     public void onStartInstallingUpdate(@NotNull ReaderSoftwareUpdate update, @Nullable Cancelable cancelable) {
         viewModel.isConnecting.setValue(false);
         viewModel.isUpdating.setValue(false);

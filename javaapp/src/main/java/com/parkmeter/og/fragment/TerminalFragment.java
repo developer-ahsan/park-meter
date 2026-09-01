@@ -360,4 +360,28 @@ public class TerminalFragment extends Fragment implements DiscoveryListener {
             }
         }
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // startBackgroundDiscovery() passes `this` fragment directly to the SDK as the
+        // DiscoveryListener, and background discovery has no built-in timeout. If the
+        // fragment is torn down without this, Terminal holds a live reference to this
+        // (now destroyed) fragment for as long as discovery keeps running - unbounded if
+        // no reader is ever found - retaining the fragment and everything it references.
+        if (discoveryTask != null) {
+            discoveryTask.cancel(new Callback() {
+                @Override
+                public void onSuccess() {
+                    // Discovery stopped
+                }
+
+                @Override
+                public void onFailure(@NotNull TerminalException e) {
+                    // Ignore failure
+                }
+            });
+            discoveryTask = null;
+        }
+    }
 }

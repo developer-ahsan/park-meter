@@ -103,47 +103,50 @@ public class LogViewerFragment extends Fragment {
     }
 
     private void loadLogs() {
+        // This runs on every resume plus every refresh/filter/search tap, so the spawned
+        // process and its pipes MUST be cleaned up on every path - previously neither the
+        // reader nor the Process itself were ever closed/destroyed, leaking a file
+        // descriptor (and an OS process) on every call.
+        Process process = null;
         try {
-            Process process = Runtime.getRuntime().exec("logcat -d");
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            
+            process = Runtime.getRuntime().exec("logcat -d");
             List<String> logs = new ArrayList<>();
-            String line;
-            
-            while ((line = bufferedReader.readLine()) != null) {
-                boolean shouldAdd = false;
-                
-                // Apply discovery filter
-                if (showFilteredLogs) {
-                    if (line.contains("DiscoveryFragment") || 
-                        line.contains("TAP_TO_PAY") || 
-                        line.contains("discovery") ||
-                        line.contains("Terminal") ||
-                        line.contains("MainActivity") ||
-                        line.contains("error") ||
-                        line.contains("exception")) {
+
+            try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                String line;
+                while ((line = bufferedReader.readLine()) != null) {
+                    boolean shouldAdd = false;
+
+                    // Apply discovery filter
+                    if (showFilteredLogs) {
+                        if (line.contains("DiscoveryFragment") ||
+                            line.contains("TAP_TO_PAY") ||
+                            line.contains("discovery") ||
+                            line.contains("Terminal") ||
+                            line.contains("MainActivity") ||
+                            line.contains("error") ||
+                            line.contains("exception")) {
+                            shouldAdd = true;
+                        }
+                    } else {
                         shouldAdd = true;
                     }
-                } else {
-                    shouldAdd = true;
-                }
-                
-                // Apply search filter
-                if (shouldAdd && !searchQuery.isEmpty()) {
-                    shouldAdd = line.toLowerCase().contains(searchQuery.toLowerCase());
-                }
-                
-                if (shouldAdd) {
-                    logs.add(line);
+
+                    // Apply search filter
+                    if (shouldAdd && !searchQuery.isEmpty()) {
+                        shouldAdd = line.toLowerCase().contains(searchQuery.toLowerCase());
+                    }
+
+                    if (shouldAdd) {
+                        logs.add(line);
+                    }
                 }
             }
-            
-            bufferedReader.close();
-            
+
             // Take last 1000 lines to avoid memory issues
             int startIndex = Math.max(0, logs.size() - 1000);
             List<String> recentLogs = logs.subList(startIndex, logs.size());
-            
+
             StringBuilder logBuilder = new StringBuilder();
             logBuilder.append(LiteralsHelper.getText(getContext(), "log_viewer_header")).append("\n");
             logBuilder.append(LiteralsHelper.getText(getContext(), "timestamp_label")).append(" ").append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date())).append("\n");
@@ -153,15 +156,25 @@ public class LogViewerFragment extends Fragment {
                 logBuilder.append(LiteralsHelper.getText(getContext(), "search_label")).append(" '").append(searchQuery).append("'\n");
             }
             logBuilder.append(LiteralsHelper.getText(getContext(), "log_separator")).append("\n\n");
-            
+
             for (String logLine : recentLogs) {
                 logBuilder.append(logLine).append("\n");
             }
-            
+
             logTextView.setText(logBuilder.toString());
-            
+
         } catch (IOException e) {
             logTextView.setText(LiteralsHelper.getText(getContext(), "error_loading_logs").replace("%1$s", e.getMessage()));
+        } finally {
+            if (process != null) {
+                // Drain and close stderr too - it was never touched before, which can
+                // itself block/leak a pipe if logcat writes anything to it.
+                try {
+                    process.getErrorStream().close();
+                } catch (IOException ignored) {
+                }
+                process.destroy();
+            }
         }
     }
 

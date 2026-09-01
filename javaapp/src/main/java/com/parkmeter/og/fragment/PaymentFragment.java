@@ -92,7 +92,10 @@ public class PaymentFragment extends Fragment {
     private Cancelable discoveryTask;
     private boolean isDiscovering = false;
     private String dynamicLocationId = null;
-    private android.os.Handler discoveryTimeoutHandler = new android.os.Handler();
+    // Single main-thread handler for all delayed work in this fragment; cleared in
+    // onDestroyView() so nothing can fire against a destroyed view.
+    private final android.os.Handler mainHandler = new android.os.Handler(android.os.Looper.getMainLooper());
+    private android.os.Handler discoveryTimeoutHandler = mainHandler;
     private Runnable discoveryTimeoutRunnable;
     
     // Overlay loader
@@ -186,13 +189,13 @@ public class PaymentFragment extends Fragment {
         tvOverlaySubStatus = overlayLoader.findViewById(R.id.tv_overlay_sub_status);
         progressBarOverlay = overlayLoader.findViewById(R.id.progress_bar_overlay);
         
-        // Add overlay to parent view
+        // Add overlay to the fragment's own root view - NOT its parent (the activity's
+        // shared fragment container). Parenting it to the fragment's own view means the
+        // framework tears the overlay down together with the fragment's view, so it can
+        // never be stranded on top of a screen that replaces this fragment.
         if (parentView instanceof ViewGroup) {
-            ViewGroup parent = (ViewGroup) parentView.getParent();
-            if (parent != null) {
-                parent.addView(overlayLoader);
-                overlayLoader.setVisibility(View.GONE);
-            }
+            ((ViewGroup) parentView).addView(overlayLoader);
+            overlayLoader.setVisibility(View.GONE);
         }
     }
 
@@ -259,7 +262,7 @@ public class PaymentFragment extends Fragment {
                             // Use fallback location ID
                             dynamicLocationId = "tml_GJv9FgsphhQmKS";
                             // Continue with discovery after short delay
-                            new android.os.Handler().postDelayed(() -> {
+                            mainHandler.postDelayed(() -> {
                                 updateOverlayLoader("Connecting to Reader", "Please wait while we connect...");
                                 startAutoDiscovery();
                             }, 1500);
@@ -276,7 +279,7 @@ public class PaymentFragment extends Fragment {
                         // Use fallback location ID
                         dynamicLocationId = "tml_GJv9FgsphhQmKS";
                         // Continue with discovery after short delay
-                        new android.os.Handler().postDelayed(() -> {
+                        mainHandler.postDelayed(() -> {
                             updateOverlayLoader("Connecting to Reader", "Please wait while we connect...");
                             startAutoDiscovery();
                         }, 1500);
@@ -528,7 +531,7 @@ public class PaymentFragment extends Fragment {
                                         updateOverlayLoader("Discovery Timeout", "No readers found. Check device compatibility.");
                                         btnCollectPayment.setEnabled(true);
                                         btnCollectPayment.setText(LiteralsHelper.getText(getContext(), "retry_payment"));
-                                        new android.os.Handler().postDelayed(() -> hideOverlayLoader(), 5000);
+                                        mainHandler.postDelayed(() -> hideOverlayLoader(), 5000);
                                     });
                                 }
                             }
@@ -552,7 +555,7 @@ public class PaymentFragment extends Fragment {
                             btnCollectPayment.setText(LiteralsHelper.getText(getContext(), "retry_payment"));
                             
                             // Hide overlay after 3 seconds
-                            new android.os.Handler().postDelayed(() -> hideOverlayLoader(), 3000);
+                            mainHandler.postDelayed(() -> hideOverlayLoader(), 3000);
                         });
                     }
                 }
@@ -677,7 +680,7 @@ public class PaymentFragment extends Fragment {
                         btnCollectPayment.setText(LiteralsHelper.getText(getContext(), "retry_payment"));
                         
                         // Hide overlay after 3 seconds
-                        new android.os.Handler().postDelayed(() -> hideOverlayLoader(), 3000);
+                        mainHandler.postDelayed(() -> hideOverlayLoader(), 3000);
                     });
                 }
             }
@@ -707,44 +710,51 @@ public class PaymentFragment extends Fragment {
     }
     
     private void showOverlayLoader(String status, String subStatus) {
-        if (overlayLoader != null) {
-            if (getActivity() != null) {
-                getActivity().runOnUiThread(() -> {
-                    overlayLoader.setVisibility(View.VISIBLE);
-                    if (tvOverlayStatus != null) tvOverlayStatus.setText(status);
-                    if (tvOverlaySubStatus != null) tvOverlaySubStatus.setText(subStatus);
-                    
-                    // Apply organization color to progress bar
-                    if (progressBarOverlay != null) {
-                        AppThemeManager themeManager = AppThemeManager.getInstance();
-                        progressBarOverlay.setIndeterminateTintList(
-                            android.content.res.ColorStateList.valueOf(themeManager.getCurrentOrgColorInt())
-                        );
-                    }
-                });
-            }
+        if (!isAdded() || getActivity() == null) {
+            return;
         }
+        getActivity().runOnUiThread(() -> {
+            // Re-check inside the runnable: the view may have been torn down between
+            // posting and running (e.g. fragment replaced while a callback was in flight).
+            if (!isAdded() || overlayLoader == null) {
+                return;
+            }
+            overlayLoader.setVisibility(View.VISIBLE);
+            if (tvOverlayStatus != null) tvOverlayStatus.setText(status);
+            if (tvOverlaySubStatus != null) tvOverlaySubStatus.setText(subStatus);
+
+            // Apply organization color to progress bar
+            if (progressBarOverlay != null) {
+                AppThemeManager themeManager = AppThemeManager.getInstance();
+                progressBarOverlay.setIndeterminateTintList(
+                    android.content.res.ColorStateList.valueOf(themeManager.getCurrentOrgColorInt())
+                );
+            }
+        });
     }
 
     private void updateOverlayLoader(String status, String subStatus) {
-        if (overlayLoader != null && overlayLoader.getVisibility() == View.VISIBLE) {
-            if (getActivity() != null) {
-                getActivity().runOnUiThread(() -> {
-                    if (tvOverlayStatus != null) tvOverlayStatus.setText(status);
-                    if (tvOverlaySubStatus != null) tvOverlaySubStatus.setText(subStatus);
-                });
-            }
+        if (!isAdded() || getActivity() == null || overlayLoader == null || overlayLoader.getVisibility() != View.VISIBLE) {
+            return;
         }
+        getActivity().runOnUiThread(() -> {
+            if (!isAdded() || overlayLoader == null) {
+                return;
+            }
+            if (tvOverlayStatus != null) tvOverlayStatus.setText(status);
+            if (tvOverlaySubStatus != null) tvOverlaySubStatus.setText(subStatus);
+        });
     }
 
     private void hideOverlayLoader() {
-        if (overlayLoader != null) {
-            if (getActivity() != null) {
-                getActivity().runOnUiThread(() -> {
-                    overlayLoader.setVisibility(View.GONE);
-                });
-            }
+        if (!isAdded() || getActivity() == null) {
+            return;
         }
+        getActivity().runOnUiThread(() -> {
+            if (overlayLoader != null) {
+                overlayLoader.setVisibility(View.GONE);
+            }
+        });
     }
     
     /**
@@ -753,7 +763,9 @@ public class PaymentFragment extends Fragment {
     public void hideOverlayLoaderPublic() {
         hideOverlayLoader();
         isProcessingPayment = false;
-        btnCollectPayment.setEnabled(true);
+        if (btnCollectPayment != null) {
+            btnCollectPayment.setEnabled(true);
+        }
     }
 
     private void startAutomaticPayment() {
@@ -946,6 +958,24 @@ public class PaymentFragment extends Fragment {
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        // Cancel every delayed runnable posted by this fragment - none of them should
+        // fire against a view that no longer exists.
+        mainHandler.removeCallbacksAndMessages(null);
+        discoveryTimeoutRunnable = null;
+
+        // The overlay is a child of this fragment's own root view, so the framework
+        // already tore it down along with the rest of the view hierarchy above. Just
+        // drop our references so nothing can accidentally touch a dead view.
+        overlayLoader = null;
+        tvOverlayStatus = null;
+        tvOverlaySubStatus = null;
+        progressBarOverlay = null;
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
         // Stop discovery if running
@@ -955,17 +985,12 @@ public class PaymentFragment extends Fragment {
                 public void onSuccess() {
                     // Discovery stopped
                 }
-                
+
                 @Override
                 public void onFailure(@NonNull TerminalException e) {
                     // Ignore failure
                 }
             });
-        }
-        
-        // Remove overlay loader
-        if (overlayLoader != null && overlayLoader.getParent() != null) {
-            ((ViewGroup) overlayLoader.getParent()).removeView(overlayLoader);
         }
     }
 }
