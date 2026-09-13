@@ -124,6 +124,7 @@ public class PaymentFragment extends Fragment {
             selectedRate = (Rate) getArguments().getSerializable(ARG_RATE);
             selectedZone = (Zone) getArguments().getSerializable(ARG_ZONE);
             vehicleNumber = getArguments().getString(ARG_VEHICLE_NUMBER);
+            if (vehicleNumber == null) vehicleNumber = "";
         }
         
         if (getActivity() instanceof NavigationListener) {
@@ -330,7 +331,7 @@ public class PaymentFragment extends Fragment {
         // Display selection details
         tvOrgName.setText(selectedZone.getOrganization().getOrgName());
         tvZoneName.setText(selectedZone.getZoneName());
-        tvVehicleNumber.setText(vehicleNumber);
+        tvVehicleNumber.setText(vehicleNumber != null && !vehicleNumber.isEmpty() ? vehicleNumber : "—");
         tvRateName.setText(selectedRate.getRateName());
         tvTimeDesc.setText(selectedRateStep.getTimeDesc());
         

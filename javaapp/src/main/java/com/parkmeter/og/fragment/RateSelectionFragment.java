@@ -77,6 +77,7 @@ public class RateSelectionFragment extends Fragment {
         if (getArguments() != null) {
             selectedZone = (Zone) getArguments().getSerializable(ARG_ZONE);
             vehicleNumber = getArguments().getString(ARG_VEHICLE_NUMBER);
+            if (vehicleNumber == null) vehicleNumber = "";
         }
         
         if (getActivity() instanceof NavigationListener) {
@@ -124,8 +125,8 @@ public class RateSelectionFragment extends Fragment {
         // Apply theming
         AppThemeManager.getInstance().applyThemeToFragment(getView());
         
-        // Display vehicle number and zone name
-        tvVehicleNumber.setText(vehicleNumber);
+        // Display vehicle number and zone name (plate is optional)
+        tvVehicleNumber.setText(vehicleNumber != null && !vehicleNumber.isEmpty() ? vehicleNumber : "—");
         tvZoneName.setText(selectedZone.getZoneName());
         
         // Setup ViewPager - will be configured after loading rates

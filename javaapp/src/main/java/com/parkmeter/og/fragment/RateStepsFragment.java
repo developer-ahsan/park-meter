@@ -86,6 +86,7 @@ public class RateStepsFragment extends Fragment {
             selectedRate = (Rate) getArguments().getSerializable(ARG_RATE);
             selectedZone = (Zone) getArguments().getSerializable(ARG_ZONE);
             vehicleNumber = getArguments().getString(ARG_VEHICLE_NUMBER);
+            if (vehicleNumber == null) vehicleNumber = "";
         }
         
         if (getActivity() instanceof NavigationListener) {
@@ -517,9 +518,13 @@ public class RateStepsFragment extends Fragment {
     }
 
     private void checkParkingAvailability() {
-        if (selectedRateStep == null || selectedRate == null || selectedZone == null || vehicleNumber == null) {
+        if (selectedRateStep == null || selectedRate == null || selectedZone == null) {
             Toast.makeText(requireContext(), LiteralsHelper.getText(getContext(), "missing_required_data"), Toast.LENGTH_SHORT).show();
             return;
+        }
+        // Plate is optional — default to blank for API calls
+        if (vehicleNumber == null) {
+            vehicleNumber = "";
         }
         
         // Validate that selectedRateStep exists in the current rateSteps list

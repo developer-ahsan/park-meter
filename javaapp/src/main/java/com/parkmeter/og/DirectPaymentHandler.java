@@ -247,7 +247,7 @@ public class DirectPaymentHandler implements PaymentIntentCallback {
         
         StringBuilder description = new StringBuilder();
         
-        // Add plate number (required field)
+        // Add plate number (optional — falls back to "Vehicle" if blank)
         String plate = (plateNumber != null && !plateNumber.trim().isEmpty()) ? plateNumber.trim() : "Vehicle";
         description.append(plate);
         

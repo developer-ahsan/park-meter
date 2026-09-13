@@ -463,11 +463,8 @@ public class MainActivity extends AppCompatActivity implements
         Zone selectedZone = appState.getSelectedZone();
         if (selectedZone != null) {
             String vehicleNumber = appState.getVehicleNumber();
-            if (vehicleNumber != null) {
-                navigateTo(RateSelectionFragment.TAG, RateSelectionFragment.newInstance(selectedZone, vehicleNumber), true, false);
-            } else {
-                navigateTo(HomeFragment.TAG, new HomeFragment(), true, false);
-            }
+            if (vehicleNumber == null) vehicleNumber = "";
+            navigateTo(RateSelectionFragment.TAG, RateSelectionFragment.newInstance(selectedZone, vehicleNumber), true, false);
         } else {
             navigateTo(HomeFragment.TAG, new HomeFragment(), true, false);
         }
@@ -486,11 +483,8 @@ public class MainActivity extends AppCompatActivity implements
         Zone selectedZone = appState.getSelectedZone();
         if (selectedZone != null) {
             String vehicleNumber = appState.getVehicleNumber();
-            if (vehicleNumber != null) {
-                navigateTo(RateSelectionFragment.TAG, RateSelectionFragment.newInstance(selectedZone, vehicleNumber), true, false);
-            } else {
-                navigateTo(HomeFragment.TAG, new HomeFragment(), true, false);
-            }
+            if (vehicleNumber == null) vehicleNumber = "";
+            navigateTo(RateSelectionFragment.TAG, RateSelectionFragment.newInstance(selectedZone, vehicleNumber), true, false);
         } else {
             navigateTo(HomeFragment.TAG, new HomeFragment(), true, false);
         }
