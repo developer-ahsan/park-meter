@@ -9,6 +9,7 @@ import android.util.Log;
 import com.parkmeter.og.model.AppState;
 import com.parkmeter.og.utils.DynamicLiteralsManager;
 import com.stripe.stripeterminal.TerminalApplicationDelegate;
+import com.stripe.stripeterminal.taptopay.TapToPay;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -53,6 +54,14 @@ public class StripeTerminalApplication extends Application {
         }
 
         super.onCreate();
+
+        // Tap to Pay's card-reading UI runs in its own ":stripetaptopay" process, which also
+        // runs this onCreate(). Per Stripe's guidance, skip all app initialization there so the
+        // watchdog, crash handler, literals download and TerminalApplicationDelegate stay out
+        // of Stripe's secure payment process.
+        if (TapToPay.isInTapToPayProcess()) {
+            return;
+        }
 
         instance = this;
         appState = new AppState();

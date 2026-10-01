@@ -458,8 +458,23 @@ public class MainActivity extends AppCompatActivity implements
 
         // Show payment cancelled message
         Toast.makeText(this, LiteralsHelper.getText(this, "payment_cancelled"), Toast.LENGTH_SHORT).show();
-        
-        // Navigate back to rate selection screen (selection page)
+
+        returnToRateSelection();
+    }
+
+    /**
+     * Callback function called when payment failed or timed out - the reason has already
+     * been shown, so don't add a misleading "Payment cancelled" toast on top of it.
+     */
+    @Override
+    public void onPaymentFailed() {
+        returnToRateSelection();
+    }
+
+    /**
+     * Navigate back to rate selection screen (selection page)
+     */
+    private void returnToRateSelection() {
         Zone selectedZone = appState.getSelectedZone();
         if (selectedZone != null) {
             String vehicleNumber = appState.getVehicleNumber();

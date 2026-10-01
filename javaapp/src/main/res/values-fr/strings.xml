@@ -253,6 +253,7 @@
     <!-- Payment error messages -->
     <string name="failed_to_create_payment">Échec de la création du paiement : %1$s</string>
     <string name="payment_confirmation_failed">Échec de la confirmation du paiement : %1$s</string>
+    <string name="card_type_not_accepted">Ce type de carte n\'est pas accepté. Veuillez essayer une autre carte.</string>
     <string name="payment_collection_failed">Échec de la collecte du paiement : %1$s</string>
 
     <!-- QR Code strings -->

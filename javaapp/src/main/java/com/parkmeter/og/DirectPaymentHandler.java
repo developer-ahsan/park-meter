@@ -26,7 +26,9 @@ import com.stripe.stripeterminal.external.models.PaymentIntent;
 import com.stripe.stripeterminal.external.models.PaymentIntentParameters;
 import com.stripe.stripeterminal.external.models.PaymentIntentStatus;
 import com.stripe.stripeterminal.external.models.PaymentMethodOptionsParameters;
+import com.stripe.stripeterminal.external.models.PaymentMethodType;
 import com.stripe.stripeterminal.external.models.CardPresentParameters;
+import com.stripe.stripeterminal.external.models.TerminalErrorCode;
 import com.stripe.stripeterminal.external.models.TerminalException;
 
 import java.io.IOException;
@@ -58,6 +60,10 @@ public class DirectPaymentHandler implements PaymentIntentCallback {
     private Cancelable collectTask;
     private Handler timeoutHandler;
     private boolean isPaymentCompleted = false;
+    // Set once the flow has reached a terminal state (success, failure, timeout, cancel).
+    // Cancelling collectTask on timeout/cancel makes the SDK call the collect onFailure too,
+    // which would otherwise show a second toast and navigate a second time.
+    private boolean isFinished = false;
     private String parkingId; // Store parking_id to pass to EmailReceiptFragment
     
     public DirectPaymentHandler(FragmentActivity activity, long amount, String currency, 
@@ -217,7 +223,12 @@ public class DirectPaymentHandler implements PaymentIntentCallback {
             cardPresentParametersBuilder.setRequestIncrementalAuthorizationSupport(true);
         }
         
-        PaymentIntentParameters params = new PaymentIntentParameters.Builder()
+        // Allow Interac alongside card_present: Canadian debit cards (incl. Visa/Mastercard
+        // debit co-branded with Interac) are read over the Interac AID and are rejected at
+        // confirm time with "The PaymentMethod provided (interac_present) is not allowed"
+        // if the PaymentIntent only permits card_present (the Builder() default).
+        PaymentIntentParameters params = new PaymentIntentParameters.Builder(
+                    java.util.Arrays.asList(PaymentMethodType.CARD_PRESENT, PaymentMethodType.INTERAC_PRESENT))
                 .setAmount(amount)
                 .setCurrency(currency)
                 .setDescription(description) // Add detailed description
@@ -289,8 +300,23 @@ public class DirectPaymentHandler implements PaymentIntentCallback {
         timeoutHandler.postDelayed(this::handlePaymentTimeout, PAYMENT_TIMEOUT_MS);
     }
     
+    /**
+     * Marks the flow as finished. Returns false if it had already finished, in which case
+     * the caller must do nothing.
+     */
+    private boolean markFinished() {
+        if (isFinished) {
+            return false;
+        }
+        isFinished = true;
+        if (timeoutHandler != null) {
+            timeoutHandler.removeCallbacksAndMessages(null);
+        }
+        return true;
+    }
+
     private void handlePaymentTimeout() {
-        if (!isPaymentCompleted) {
+        if (!isPaymentCompleted && markFinished()) {
             // Cancel any ongoing collection
             if (collectTask != null) {
                 collectTask.cancel(new Callback() {
@@ -314,10 +340,14 @@ public class DirectPaymentHandler implements PaymentIntentCallback {
         }
     }
     
+    /**
+     * Navigate back to rate selection. The reason (error/timeout) has already been shown,
+     * so this must not add a "Payment cancelled" toast on top of it.
+     */
     private void returnToSelectionScreen() {
         if (activity instanceof NavigationListener) {
             NavigationListener navigationListener = (NavigationListener) activity;
-            navigationListener.onCancelCollectPaymentMethod();
+            navigationListener.onPaymentFailed();
         }
     }
     
@@ -334,8 +364,30 @@ public class DirectPaymentHandler implements PaymentIntentCallback {
     
     @Override
     public void onFailure(@NonNull TerminalException e) {
-        // Failed to create payment intent", e);
+        logTerminalError("Failed to create payment intent", e);
         handlePaymentFailure(LiteralsHelper.getText(activity, "failed_to_create_payment").replace("%1$s", e.getErrorMessage()));
+    }
+
+    /**
+     * Log a Terminal error with its code and Stripe API error, so the in-app log viewer
+     * shows the real reason (release builds run the Terminal SDK at ERROR log level).
+     */
+    private void logTerminalError(String what, TerminalException e) {
+        String apiError = e.getApiError() != null
+                ? (e.getApiError().getCode() + " / " + e.getApiError().getDeclineCode() + " / " + e.getApiError().getMessage())
+                : "none";
+        Log.e(TAG, what + " - code: " + e.getErrorCode() + ", message: " + e.getErrorMessage()
+                + ", apiError: " + apiError, e);
+    }
+
+    /**
+     * Stripe rejects the confirm with "The PaymentMethod provided (<type>) is not allowed for
+     * this PaymentIntent" when the card was read with a payment method type the intent does
+     * not permit (e.g. an Interac debit card). Show a clear message instead of the raw API text.
+     */
+    private static boolean isPaymentMethodTypeNotAllowed(TerminalException e) {
+        String message = e.getErrorMessage();
+        return message != null && message.contains("is not allowed for this PaymentIntent");
     }
     
     @OptIn(markerClass = com.stripe.stripeterminal.external.InternalApi.class)
@@ -353,25 +405,36 @@ public class DirectPaymentHandler implements PaymentIntentCallback {
                 // Payment method collected successfully");
                 
                 // Confirm payment intent
+                if (isFinished) {
+                    // Timed out / cancelled while the card was being read - don't confirm.
+                    return;
+                }
                 Terminal.getInstance().confirmPaymentIntent(collectedPaymentIntent, new PaymentIntentCallback() {
                     @Override
                     public void onSuccess(@NonNull PaymentIntent confirmedPaymentIntent) {
                         // Payment intent confirmed successfully");
-                        handlePaymentSuccess();
+                        handlePaymentSuccess(confirmedPaymentIntent);
                     }
-                    
+
                     @Override
                     public void onFailure(@NonNull TerminalException e) {
-                        // Failed to confirm payment intent", e);
-                        handlePaymentFailure(LiteralsHelper.getText(activity, "payment_confirmation_failed").replace("%1$s", e.getErrorMessage()));
+                        logTerminalError("Failed to confirm payment intent", e);
+                        String message = isPaymentMethodTypeNotAllowed(e)
+                                ? LiteralsHelper.getText(activity, "card_type_not_accepted")
+                                : LiteralsHelper.getText(activity, "payment_confirmation_failed").replace("%1$s", e.getErrorMessage());
+                        handlePaymentFailure(message);
                     }
                 });
             }
-            
+
             @Override
             public void onFailure(@NonNull TerminalException e) {
-                // Payment method collection failed", e);
-                handlePaymentFailure(LiteralsHelper.getText(activity, "payment_collection_failed").replace("%1$s", e.getErrorMessage()));
+                logTerminalError("Payment method collection failed", e);
+                // CANCELED = customer pressed X on the Tap to Pay screen - that really is a cancel.
+                String message = e.getErrorCode() == TerminalErrorCode.CANCELED
+                        ? LiteralsHelper.getText(activity, "payment_cancelled")
+                        : LiteralsHelper.getText(activity, "payment_collection_failed").replace("%1$s", e.getErrorMessage());
+                handlePaymentFailure(message);
             }
         };
         
@@ -380,36 +443,35 @@ public class DirectPaymentHandler implements PaymentIntentCallback {
     }
     
     private void handlePaymentFailure(String errorMessage) {
-        // Payment failed: " + errorMessage);
-        
-        // Cancel timeout handler
-        if (timeoutHandler != null) {
-            timeoutHandler.removeCallbacksAndMessages(null);
+        // Ignore failures that arrive after the flow already ended (e.g. the collect
+        // onFailure fired because we cancelled collectTask on timeout).
+        if (!markFinished()) {
+            return;
         }
-        
+
         activity.runOnUiThread(() -> {
-            Toast.makeText(activity, errorMessage, Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, errorMessage, Toast.LENGTH_LONG).show();
             returnToSelectionScreen();
         });
     }
-    
-    private void handlePaymentSuccess() {
-        // Payment completed successfully");
-        // Payment intent status: " + paymentIntent.getStatus());
-        // Payment intent ID: " + paymentIntent.getId());
-        
-        isPaymentCompleted = true;
-        
-        // Cancel timeout handler
-        if (timeoutHandler != null) {
-            timeoutHandler.removeCallbacksAndMessages(null);
+
+    private void handlePaymentSuccess(PaymentIntent confirmedPaymentIntent) {
+        if (!markFinished()) {
+            // Should not happen (timeout skips confirm), but never navigate twice.
+            Log.w(TAG, "Payment confirmed after flow already finished: " + confirmedPaymentIntent.getId());
         }
-        
+        isPaymentCompleted = true;
+        this.paymentIntent = confirmedPaymentIntent;
+
         // Capture payment intent immediately after confirmation (matching EventFragment logic)
         // Run off the main thread - this is a blocking network call and must never
         // block the UI thread (Stripe delivers this callback on the main thread).
-        String paymentIntentId = paymentIntent.getId();
-        if (paymentIntentId != null) {
+        // Only card_present intents need a manual capture; Interac (interac_present) intents
+        // are captured automatically and come back SUCCEEDED, so capturing them would fail.
+        String paymentIntentId = confirmedPaymentIntent.getId();
+        if (confirmedPaymentIntent.getStatus() != PaymentIntentStatus.REQUIRES_CAPTURE) {
+            Log.d(TAG, "Skipping capture for " + paymentIntentId + " - status: " + confirmedPaymentIntent.getStatus());
+        } else if (paymentIntentId != null) {
             final String captureId = paymentIntentId;
             new Thread(() -> {
                 try {
@@ -578,12 +640,10 @@ public class DirectPaymentHandler implements PaymentIntentCallback {
     
     public void cancelPayment() {
         // Payment cancelled by user");
-        
-        // Cancel timeout handler
-        if (timeoutHandler != null) {
-            timeoutHandler.removeCallbacksAndMessages(null);
+        if (!markFinished()) {
+            return;
         }
-        
+
         // Cancel collection if ongoing
         if (collectTask != null) {
             collectTask.cancel(new Callback() {

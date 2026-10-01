@@ -293,7 +293,11 @@ public class EventFragment extends Fragment implements MobileReaderListener {
                     metadata.put("parking_id", String.valueOf(parkingId));
                     
                     
-                    final PaymentIntentParameters params = new PaymentIntentParameters.Builder()
+                    // Allow Interac too - see DirectPaymentHandler.createPaymentIntent()
+                    final PaymentIntentParameters params = new PaymentIntentParameters.Builder(
+                                java.util.Arrays.asList(
+                                    com.stripe.stripeterminal.external.models.PaymentMethodType.CARD_PRESENT,
+                                    com.stripe.stripeterminal.external.models.PaymentMethodType.INTERAC_PRESENT))
                             .setAmount(arguments.getLong(AMOUNT))
                             .setCurrency(currency)
                             .setDescription(description)

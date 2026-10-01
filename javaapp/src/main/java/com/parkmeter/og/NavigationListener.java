@@ -16,6 +16,12 @@ public interface NavigationListener {
     void onCancelCollectPaymentMethod();
 
     /**
+     * Notify the `Activity` that the payment failed or timed out. The caller has already shown
+     * the reason, so this only navigates back to rate selection (no "Payment cancelled" toast).
+     */
+    void onPaymentFailed();
+
+    /**
      * Notify the `Activity` that collecting setup intent has been canceled
      */
     void onCancelCollectSetupIntent();
