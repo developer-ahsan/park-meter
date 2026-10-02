@@ -431,11 +431,30 @@ public class EmailReceiptFragment extends Fragment {
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        // Clean up timer
+    public void onDestroyView() {
+        super.onDestroyView();
         if (countDownTimer != null) {
             countDownTimer.cancel();
+            countDownTimer = null;
+        }
+        isTimerRunning = false;
+        tvTimer = null;
+        tvAmountPaid = null;
+        tvTransactionId = null;
+        etEmail = null;
+        btnSendEmail = null;
+        btnCancel = null;
+        ivQrCode = null;
+        layoutQrCodeSection = null;
+        navigationListener = null;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
+            countDownTimer = null;
         }
     }
 

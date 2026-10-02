@@ -1,7 +1,7 @@
 <resources>
     <!-- Existing strings -->
     <string name="amount">AMOUNT</string>
-    <string name="app_name">Parkapp Meter</string>
+    <string name="app_name">PARKAPP EVENTS</string>
     <string name="cancel">Cancel</string>
     <string name="back_home">Return to Home</string>
     <string name="check_for_update">Check for update</string>
@@ -88,7 +88,7 @@
     <string name="settings">Settings</string>
     <string name="organization_details">Organization Details</string>
     <string name="organization_label">Organization:</string>
-    <string name="park_meter">Park Meter</string>
+    <string name="park_meter">PARKAPP EVENTS</string>
     <string name="zone_label">Zone:</string>
     <string name="city_label">City:</string>
     <string name="not_selected">Not Selected</string>
@@ -134,10 +134,10 @@
     <!-- Vehicle Number Fragment -->
     <string name="license_plate">License Plate</string>
     <string name="enter_license_plate_details">Enter License Plate Details</string>
-    <string name="license_plate_label">License Plate</string>
+    <string name="license_plate_label">License Plate (Optional)</string>
     <string name="license_plate_format">Format: Up to 8 characters. Uppercase letters and digits only (e.g., ABCD, 1234, AB12, FF1234)</string>
     <string name="next">Next</string>
-    <string name="enter_license_plate_hint">Enter license plate</string>
+    <string name="enter_license_plate_hint">Enter license plate (optional)</string>
 
     <!-- Email Receipt Fragment -->
     <string name="payment_successful">Payment Successful!</string>
@@ -200,7 +200,7 @@
     <string name="na">N/A</string>
     <string name="enter_license_plate_button">Enter License Plate</string>
     <string name="no_zone_selected">No Zone Selected</string>
-    <string name="park45_meter">Parkapp Meter</string>
+    <string name="park45_meter">PARKAPP EVENTS</string>
 
     <!-- Content Descriptions -->
     <string name="back_icon_description">Back</string>

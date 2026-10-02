@@ -56,6 +56,8 @@ public class HomeFragment extends Fragment {
 	private com.google.android.material.progressindicator.CircularProgressIndicator campaignLoader;
 	private android.webkit.WebView campaignWebView;
 	
+	private com.bumptech.glide.request.target.CustomTarget<android.graphics.drawable.Drawable> glideLogoTarget;
+
 	// Language dropdown views
 	private LinearLayout languageDropdown;
 	private ImageView languageFlag;
@@ -264,14 +266,14 @@ public class HomeFragment extends Fragment {
 			enterVehicleButton.setText(LiteralsHelper.getText(getContext(), "enter_license_plate_button"));
 			tvSelectedZoneDisplay.setText(LiteralsHelper.getText(getContext(), "selected_zone") + " " + selectedZone.getZoneName());
 			// Keep settings icon hidden
-			settingsIcon.setVisibility(View.GONE);
+			settingsIcon.setVisibility(View.VISIBLE);
 			
 			// Load campaign for selected zone
 			loadCampaign(selectedZone.getId());
 		} else {
 			enterVehicleButton.setText(LiteralsHelper.getText(getContext(), "select_zone"));
 			tvSelectedZoneDisplay.setText(LiteralsHelper.getText(getContext(), "no_zone_selected"));
-			settingsIcon.setVisibility(View.GONE);
+			settingsIcon.setVisibility(View.VISIBLE);
 			
 			// Hide campaign card when no zone is selected
 			if (campaignCard != null) {
@@ -360,11 +362,18 @@ public class HomeFragment extends Fragment {
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
+		// Clear Glide target before nulling the ImageView it writes to
+		if (glideLogoTarget != null) {
+			Glide.with(this).clear(glideLogoTarget);
+			glideLogoTarget = null;
+		}
+
 		// Clear view references to prevent memory leaks
 		bannerLayout = null;
 		appLogo = null;
 		appLogoLoader = null;
 		tvAppName = null;
+		tvVersionFooter = null;
 		tvSelectedZoneDisplay = null;
 		enterVehicleButton = null;
 		settingsIcon = null;
@@ -376,13 +385,13 @@ public class HomeFragment extends Fragment {
 			campaignWebView.destroy();
 			campaignWebView = null;
 		}
-		
+
 		// Clear language dropdown references
 		languageDropdown = null;
 		languageFlag = null;
 		languageText = null;
 		availableLanguages = null;
-		
+
 		// Clear navigation listener to prevent memory leaks
 		navigationListener = null;
 	}
@@ -401,30 +410,32 @@ public class HomeFragment extends Fragment {
 					appLogoLoader.setVisibility(View.VISIBLE);
 				}
 				
+				glideLogoTarget = new com.bumptech.glide.request.target.CustomTarget<android.graphics.drawable.Drawable>() {
+						@Override
+						public void onResourceReady(@NonNull android.graphics.drawable.Drawable resource, @Nullable com.bumptech.glide.request.transition.Transition<? super android.graphics.drawable.Drawable> transition) {
+							if (appLogo != null) appLogo.setImageDrawable(resource);
+							if (appLogoLoader != null) appLogoLoader.setVisibility(View.GONE);
+						}
+
+						@Override
+						public void onLoadCleared(@Nullable android.graphics.drawable.Drawable placeholder) {
+							if (appLogoLoader != null) appLogoLoader.setVisibility(View.GONE);
+						}
+
+						@Override
+						public void onLoadFailed(@Nullable android.graphics.drawable.Drawable errorDrawable) {
+							if (appLogoLoader != null) appLogoLoader.setVisibility(View.GONE);
+							if (appLogo != null) {
+								int color = AppThemeManager.getInstance().getCurrentOrgColorInt();
+								appLogo.setImageDrawable(new android.graphics.drawable.ColorDrawable(color));
+							}
+						}
+					};
 				Glide.with(this)
 						.load(logoUrl)
 						.diskCacheStrategy(DiskCacheStrategy.NONE)
 						.skipMemoryCache(true)
-						.into(new com.bumptech.glide.request.target.CustomTarget<android.graphics.drawable.Drawable>() {
-							@Override
-							public void onResourceReady(@NonNull android.graphics.drawable.Drawable resource, @Nullable com.bumptech.glide.request.transition.Transition<? super android.graphics.drawable.Drawable> transition) {
-								appLogo.setImageDrawable(resource);
-								if (appLogoLoader != null) appLogoLoader.setVisibility(View.GONE);
-							}
-
-							@Override
-							public void onLoadCleared(@Nullable android.graphics.drawable.Drawable placeholder) {
-								if (appLogoLoader != null) appLogoLoader.setVisibility(View.GONE);
-							}
-
-							@Override
-							public void onLoadFailed(@Nullable android.graphics.drawable.Drawable errorDrawable) {
-								if (appLogoLoader != null) appLogoLoader.setVisibility(View.GONE);
-								// show placeholder only when failed
-								int color = AppThemeManager.getInstance().getCurrentOrgColorInt();
-								appLogo.setImageDrawable(new android.graphics.drawable.ColorDrawable(color));
-							}
-						});
+						.into(glideLogoTarget);
 			} else {
 				if (appLogoLoader != null) appLogoLoader.setVisibility(View.GONE);
 				appLogo.setImageResource(R.drawable.ic_app_logo);

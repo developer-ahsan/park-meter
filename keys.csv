@@ -1,6 +1,6 @@
 key,english,french
 amount,AMOUNT,MONTANT
-app_name,Park45 Meter,Park45 Compteur
+app_name,PARKAPP EVENTS,PARKAPP EVENTS
 cancel,Cancel,Annuler
 back_home,Return to Home,Retour à la maison
 check_for_update,Check for update,Vérifier les mises à jour
@@ -83,7 +83,7 @@ total_amount,Total Amount,Montant total
 settings,Settings,Paramètres
 organization_details,Organization Details,Détails de l'organisation
 organization_label,Organization:,Organisation :
-park_meter,Park Meter,Compteur de stationnement
+park_meter,PARKAPP EVENTS,PARKAPP EVENTS
 zone_label,Zone:,Zone :
 city_label,City:,Ville :
 not_selected,Not Selected,Non sélectionné
@@ -117,10 +117,10 @@ connected_reader_name,Connected: Reader Name,Connecté : Nom du lecteur
 collect_payment_button,Collect Payment,Collecter le paiement
 license_plate,License Plate,Plaque d'immatriculation
 enter_license_plate_details,Enter License Plate Details,Entrer les détails de la plaque d'immatriculation
-license_plate_label,License Plate,Plaque d'immatriculation
+license_plate_label,License Plate (Optional),Plaque d'immatriculation (Facultatif)
 license_plate_format,Format: Up to 8 characters. Uppercase letters and digits only (e.g., ABCD, 1234, AB12, FF1234),Format : Jusqu'à 8 caractères. Lettres majuscules et chiffres uniquement (ex. : ABCD, 1234, AB12, FF1234)
 next,Next,Suivant
-enter_license_plate_hint,Enter license plate,Entrer la plaque d'immatriculation
+enter_license_plate_hint,Enter license plate (optional),Entrer la plaque d'immatriculation (facultatif)
 payment_successful,Payment Successful!,Paiement réussi !
 email_receipt,Email Receipt,Reçu par email
 email_receipt_description,Enter your email address to receive a receipt,Entrez votre adresse email pour recevoir un reçu
@@ -171,7 +171,7 @@ code_label,Code: %1$s,Code : %1$s
 na,N/A,N/A
 enter_license_plate_button,Enter License Plate,Entrer la plaque d'immatriculation
 no_zone_selected,No Zone Selected,Aucune zone sélectionnée
-park45_meter,Park45 Meter,Park45 Compteur
+park45_meter,PARKAPP EVENTS,PARKAPP EVENTS
 back_icon_description,Back,Retour
 app_logo_description,App Logo,Logo de l'application
 welcome_to,Welcome to,Bienvenue à

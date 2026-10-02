@@ -117,4 +117,13 @@ public interface NavigationListener {
      */
     void onRequestReturnToHome();
 
+    /**
+     * Notify the `Activity` that login was successful
+     */
+    void onLoginSuccess();
+
+    /**
+     * Notify the `Activity` that user wants to logout
+     */
+    void onLogout();
 }

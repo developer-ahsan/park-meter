@@ -170,6 +170,18 @@ public class LogViewerFragment extends Fragment {
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        logTextView = null;
+        refreshButton = null;
+        clearButton = null;
+        filterButton = null;
+        searchButton = null;
+        searchEditText = null;
+        scrollView = null;
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         loadLogs();

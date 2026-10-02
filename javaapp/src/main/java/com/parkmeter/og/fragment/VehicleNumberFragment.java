@@ -59,6 +59,9 @@ public class VehicleNumberFragment extends Fragment {
         // Apply theming to the fragment
         AppThemeManager.getInstance().applyThemeToFragment(view);
 
+        // Plate is optional — next button enabled by default
+        nextButton.setEnabled(true);
+
         // Set up vehicle number input with masking
         setupVehicleNumberInput();
 
@@ -106,13 +109,16 @@ public class VehicleNumberFragment extends Fragment {
     }
 
     private void validateVehicleNumber(String vehicleNumber) {
-        // Accept 1 to 8 chars, uppercase letters and digits only
+        // Accept empty (plate is optional) OR 1–8 uppercase letters/digits
+        if (vehicleNumber.length() == 0) {
+            nextButton.setEnabled(true);
+            vehicleNumberInput.setError(null);
+            return;
+        }
         Pattern allowed = Pattern.compile("^[A-Z0-9]{1,8}$");
         boolean isValid = allowed.matcher(vehicleNumber).matches();
-
-        nextButton.setEnabled(isValid && vehicleNumber.length() > 0);
-
-        if (vehicleNumber.length() > 0 && !isValid) {
+        nextButton.setEnabled(isValid);
+        if (!isValid) {
             vehicleNumberInput.setError("Use 1-8 uppercase letters and digits only (e.g., ABCD, 1234, AB12, FF1234)");
         } else {
             vehicleNumberInput.setError(null);
@@ -122,19 +128,15 @@ public class VehicleNumberFragment extends Fragment {
     private void onNextButtonClicked() {
         String vehicleNumber = vehicleNumberInput.getText().toString().trim();
 
-        if (vehicleNumber.isEmpty()) {
-            Toast.makeText(getContext(), LiteralsHelper.getText(getContext(), "please_enter_license_plate"), Toast.LENGTH_SHORT).show();
-            return;
+        // Plate is optional — allow empty string through
+        if (!vehicleNumber.isEmpty()) {
+            Pattern allowed = Pattern.compile("^[A-Z0-9]{1,8}$");
+            if (!allowed.matcher(vehicleNumber).matches()) {
+                Toast.makeText(getContext(), LiteralsHelper.getText(getContext(), "invalid_license_plate_format"), Toast.LENGTH_SHORT).show();
+                return;
+            }
         }
 
-        // Validate vehicle number format (uppercase letters and digits only, up to 8 chars)
-        Pattern allowed = Pattern.compile("^[A-Z0-9]{1,8}$");
-        if (!allowed.matcher(vehicleNumber).matches()) {
-            Toast.makeText(getContext(), LiteralsHelper.getText(getContext(), "invalid_license_plate_format"), Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // Navigate to connection screen
         if (navigationListener != null) {
             navigationListener.onVehicleNumberEntered(vehicleNumber);
         }

@@ -38,11 +38,16 @@ public class SettingsFragment extends Fragment {
     private TextView tvCityName;
     private TextView tvSettingsTitle;
     private TextView tvOrgDetailsTitle;
+    private TextView tvUserName;
+    private TextView tvUserEmail;
+    private TextView tvAccountTitle;
     private MaterialButton btnChangeZone;
+    private MaterialButton btnLogout;
     private ImageView backIcon;
     private ImageView organizationLogo;
     private com.google.android.material.progressindicator.CircularProgressIndicator organizationLogoLoader;
     private com.google.android.material.card.MaterialCardView cardOrgDetails;
+    private com.google.android.material.card.MaterialCardView cardUserAccount;
 
     public static SettingsFragment newInstance() {
         return new SettingsFragment();
@@ -79,21 +84,35 @@ public class SettingsFragment extends Fragment {
         tvCityName = view.findViewById(R.id.tv_city_name);
         tvSettingsTitle = view.findViewById(R.id.tv_settings_title);
         tvOrgDetailsTitle = view.findViewById(R.id.tv_org_details_title);
+        tvUserName = view.findViewById(R.id.tv_user_name);
+        tvUserEmail = view.findViewById(R.id.tv_user_email);
+        tvAccountTitle = view.findViewById(R.id.tv_account_title);
         btnChangeZone = view.findViewById(R.id.btn_change_zone);
+        btnLogout = view.findViewById(R.id.btn_logout);
         backIcon = view.findViewById(R.id.back_icon);
         organizationLogo = view.findViewById(R.id.organization_logo);
         organizationLogoLoader = view.findViewById(R.id.organization_logo_loader);
         cardOrgDetails = view.findViewById(R.id.card_org_details);
+        cardUserAccount = view.findViewById(R.id.card_user_account);
     }
 
     private void setupClickListeners() {
-        btnChangeZone.setOnClickListener(v -> {
-            showPinVerificationDialog();
-        });
+        btnChangeZone.setOnClickListener(v -> showPinVerificationDialog());
 
-        backIcon.setOnClickListener(v -> {
-            requireActivity().getSupportFragmentManager().popBackStack();
-        });
+        backIcon.setOnClickListener(v -> requireActivity().getSupportFragmentManager().popBackStack());
+
+        if (btnLogout != null) {
+            btnLogout.setOnClickListener(v -> {
+                new android.app.AlertDialog.Builder(requireContext())
+                        .setTitle("Logout")
+                        .setMessage("Are you sure you want to logout?")
+                        .setPositiveButton("Logout", (dialog, which) -> {
+                            if (navigationListener != null) navigationListener.onLogout();
+                        })
+                        .setNegativeButton("Cancel", null)
+                        .show();
+            });
+        }
     }
 
     private void showPinVerificationDialog() {
@@ -137,6 +156,16 @@ public class SettingsFragment extends Fragment {
     }
 
     private void updateUI() {
+        // Update logged-in user info
+        com.parkmeter.og.model.AgentLoginResponse.AgentUser user = appState.getLoggedInUser();
+        if (user == null) user = sharedPreferencesManager.getLoggedInUser();
+        if (tvUserName != null) {
+            tvUserName.setText(user != null ? user.getFullName() : "");
+        }
+        if (tvUserEmail != null) {
+            tvUserEmail.setText(user != null && user.getEmail() != null ? user.getEmail() : "");
+        }
+
         // Update organization name
         String orgName = appState.getOrganizationName();
         tvOrganizationName.setText(orgName != null ? orgName : LiteralsHelper.getText(getContext(), "not_selected"));
@@ -145,7 +174,19 @@ public class SettingsFragment extends Fragment {
         Zone selectedZone = appState.getSelectedZone();
         if (selectedZone != null) {
             tvZoneName.setText(selectedZone.getZoneName());
-            tvCityName.setText(selectedZone.getCity() != null ? selectedZone.getCity().getCityName() : LiteralsHelper.getText(getContext(), "not_selected"));
+
+            // getZonesById returns city_id as a plain string, so zone.getCity() may only have
+            // an id and no cityName. Fall back to the city saved from the login cities list.
+            String cityName = null;
+            if (selectedZone.getCity() != null && selectedZone.getCity().getCityName() != null
+                    && !selectedZone.getCity().getCityName().isEmpty()) {
+                cityName = selectedZone.getCity().getCityName();
+            } else {
+                Zone.City savedCity = appState.getSelectedCity();
+                if (savedCity == null) savedCity = sharedPreferencesManager.getSelectedCity();
+                if (savedCity != null) cityName = savedCity.getCityName();
+            }
+            tvCityName.setText(cityName != null ? cityName : LiteralsHelper.getText(getContext(), "not_selected"));
         } else {
             tvZoneName.setText(LiteralsHelper.getText(getContext(), "not_selected"));
             tvCityName.setText(LiteralsHelper.getText(getContext(), "not_selected"));
@@ -239,10 +280,15 @@ public class SettingsFragment extends Fragment {
 		tvCityName = null;
 		tvSettingsTitle = null;
 		tvOrgDetailsTitle = null;
+		tvUserName = null;
+		tvUserEmail = null;
+		tvAccountTitle = null;
 		btnChangeZone = null;
+		btnLogout = null;
 		backIcon = null;
 		organizationLogo = null;
 		organizationLogoLoader = null;
 		cardOrgDetails = null;
+		cardUserAccount = null;
 	}
 } 

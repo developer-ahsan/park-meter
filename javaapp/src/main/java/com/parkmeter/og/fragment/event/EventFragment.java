@@ -288,7 +288,7 @@ public class EventFragment extends Fragment implements MobileReaderListener {
                     long amountValue = arguments.getLong(AMOUNT);
                     // amount (in cents as string)
                     metadata.put("amount", String.valueOf(amountValue));
-                    metadata.put("source", "meter");
+                    metadata.put("source", "p45Valet");
                     // parking_id (as number string)
                     metadata.put("parking_id", String.valueOf(parkingId));
                     

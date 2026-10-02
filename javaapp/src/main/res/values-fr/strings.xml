@@ -1,7 +1,7 @@
 <resources>
     <!-- Existing strings -->
     <string name="amount">MONTANT</string>
-    <string name="app_name">Parkapp Compteur</string>
+    <string name="app_name">PARKAPP EVENTS</string>
     <string name="cancel">Annuler</string>
     <string name="back_home">Retour à la maison</string>
     <string name="check_for_update">Vérifier les mises à jour</string>
@@ -86,7 +86,7 @@
     <string name="settings">Paramètres</string>
     <string name="organization_details">Détails de l\'organisation</string>
     <string name="organization_label">Organisation :</string>
-    <string name="park_meter">Compteur de stationnement</string>
+    <string name="park_meter">PARKAPP EVENTS</string>
     <string name="zone_label">Zone :</string>
     <string name="city_label">Ville :</string>
     <string name="not_selected">Non sélectionné</string>
@@ -132,10 +132,10 @@
     <!-- Vehicle Number Fragment -->
     <string name="license_plate">Plaque d\'immatriculation</string>
     <string name="enter_license_plate_details">Entrer les détails de la plaque d\'immatriculation</string>
-    <string name="license_plate_label">Plaque d\'immatriculation</string>
+    <string name="license_plate_label">Plaque d\'immatriculation (Facultatif)</string>
     <string name="license_plate_format">Format : Jusqu\'à 8 caractères. Lettres majuscules et chiffres uniquement (ex. : ABCD, 1234, AB12, FF1234)</string>
     <string name="next">Suivant</string>
-    <string name="enter_license_plate_hint">Entrer la plaque d\'immatriculation</string>
+    <string name="enter_license_plate_hint">Entrer la plaque d\'immatriculation (facultatif)</string>
 
     <!-- Email Receipt Fragment -->
     <string name="payment_successful">Paiement réussi !</string>
@@ -198,7 +198,7 @@
     <string name="na">N/A</string>
     <string name="enter_license_plate_button">Entrer la plaque d\'immatriculation</string>
     <string name="no_zone_selected">Aucune zone sélectionnée</string>
-    <string name="park45_meter">Parkapp Compteur</string>
+    <string name="park45_meter">PARKAPP EVENTS</string>
 
     <!-- Content Descriptions -->
     <string name="back_icon_description">Retour</string>

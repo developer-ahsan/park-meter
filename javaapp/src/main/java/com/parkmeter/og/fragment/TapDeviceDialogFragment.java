@@ -208,10 +208,18 @@ public class TapDeviceDialogFragment extends DialogFragment {
     
     @Override
     public void onDestroyView() {
-        // Clean up handler to prevent memory leaks
-        if (autoDismissHandler != null && autoDismissRunnable != null) {
-            autoDismissHandler.removeCallbacks(autoDismissRunnable);
+        if (autoDismissHandler != null) {
+            autoDismissHandler.removeCallbacksAndMessages(null);
+            autoDismissHandler = null;
         }
+        autoDismissRunnable = null;
+        dismissListener = null;
+        tvTitle = null;
+        tvMessage = null;
+        tvZoneName = null;
+        tvCityName = null;
+        tvAmount = null;
+        ivTapIcon = null;
         super.onDestroyView();
     }
 }

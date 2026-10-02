@@ -1,7 +1,10 @@
 package com.parkmeter.og.network;
 
+import com.parkmeter.og.model.AgentLoginRequest;
+import com.parkmeter.og.model.AgentLoginResponse;
 import com.parkmeter.og.model.GetRateByIdRequest;
 import com.parkmeter.og.model.GetRateStepsRequest;
+import com.parkmeter.og.model.GetZonesByIdRequest;
 import com.parkmeter.og.model.GetZonesRequest;
 import com.parkmeter.og.model.ParkingAvailableRequest;
 import com.parkmeter.og.model.ParkingAvailableResponse;
@@ -25,6 +28,12 @@ import retrofit2.http.Path;
 
 public interface Park45ApiService {
     
+    @POST("agent_login")
+    Call<AgentLoginResponse> agentLogin(@Body AgentLoginRequest requestBody);
+
+    @POST("getZonesById")
+    Call<List<Zone>> getZonesById(@Body GetZonesByIdRequest requestBody);
+
     @POST("getZones")
     Call<List<Zone>> getZones(@Body GetZonesRequest requestBody);
     

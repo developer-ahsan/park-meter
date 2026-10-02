@@ -17,9 +17,11 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.parkmeter.og.fragment.CityZoneSelectionFragment;
 import com.parkmeter.og.fragment.ConnectedReaderFragment;
 import com.parkmeter.og.fragment.EmailReceiptFragment;
 import com.parkmeter.og.fragment.HomeFragment;
+import com.parkmeter.og.fragment.LoginFragment;
 import com.parkmeter.og.fragment.PaymentFragment;
 import com.parkmeter.og.fragment.SettingsFragment;
 import com.parkmeter.og.fragment.TerminalFragment;
@@ -33,6 +35,7 @@ import com.parkmeter.og.fragment.event.EventFragment;
 import com.parkmeter.og.fragment.offline.OfflinePaymentsLogFragment;
 import com.parkmeter.og.fragment.LogViewerFragment;
 import com.parkmeter.og.fragment.RateSelectionFragment;
+import com.parkmeter.og.model.AgentLoginResponse;
 import com.parkmeter.og.model.AppState;
 import com.parkmeter.og.model.Rate;
 import com.parkmeter.og.model.RateStep;
@@ -348,8 +351,7 @@ public class MainActivity extends AppCompatActivity implements
      */
     @Override
     public void onRequestZonesSelection() {
-        String selectedZoneId = appState.getSelectedZone() != null ? appState.getSelectedZone().getId() : null;
-        navigateTo(ZonesFragment.TAG, ZonesFragment.newInstance(selectedZoneId), true, true);
+        navigateTo(CityZoneSelectionFragment.TAG, new CityZoneSelectionFragment(), true, true);
     }
 
     /**
@@ -360,9 +362,10 @@ public class MainActivity extends AppCompatActivity implements
         
         // Update app state
         appState.setSelectedZone(zone);
-        
-        // Update app-wide theming with organization color
-        String orgColor = zone.getOrganization().getColor();
+
+        // Update app-wide theming — read color from AppState which prefers the login org
+        // over the zone's potentially partial org reference (getZonesById returns org as a string ID)
+        String orgColor = appState.getOrganizationColor();
         AppThemeManager.getInstance().updateOrganizationColor(orgColor);
         
         // Log complete selection data
@@ -647,19 +650,63 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     /**
-     * Initialize the [Terminal] and go to the appropriate screen based on zone selection
+     * Callback function called when login succeeds
+     */
+    @Override
+    public void onLoginSuccess() {
+        Zone savedZone = sharedPreferencesManager.getSelectedZone();
+        if (savedZone != null) {
+            appState.setSelectedZone(savedZone);
+            navigateTo(HomeFragment.TAG, new HomeFragment(), true, false);
+        } else {
+            navigateTo(CityZoneSelectionFragment.TAG, new CityZoneSelectionFragment(), true, false);
+        }
+    }
+
+    /**
+     * Callback function called when user logs out
+     */
+    @Override
+    public void onLogout() {
+        sharedPreferencesManager.clearLoginSession();
+        appState.clearLoginSession();
+        // Clear back stack and go to login
+        getSupportFragmentManager().popBackStack(null,
+                androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        navigateTo(LoginFragment.TAG, new LoginFragment(), true, false);
+    }
+
+    /**
+     * Initialize the app and route to login or home based on persisted session
      */
     private void initialize() {
-        // NOTE: In Stripe Terminal SDK v5.0.0, Terminal initializes lazily on first use
-        // Do NOT call Terminal.getInstance() or configureTapToPayUX() here
-        // It will be configured after the first reader discovery/connection
+        AgentLoginResponse.AgentUser savedUser = sharedPreferencesManager.getLoggedInUser();
 
-        // Check if it's first time or no zone is selected
-        if (sharedPreferencesManager.isFirstTime() || !appState.isZoneSelected()) {
-            sharedPreferencesManager.setFirstTime(false);
-            navigateTo(ZonesFragment.TAG, new ZonesFragment());
-        } else {
+        if (savedUser == null) {
+            navigateTo(LoginFragment.TAG, new LoginFragment());
+            return;
+        }
+
+        // Hydrate AppState from persisted session
+        appState.setLoggedInUser(savedUser);
+        appState.setAuthToken(sharedPreferencesManager.getAuthToken());
+
+        if (savedUser.getOrg() != null && savedUser.getOrg().getColor() != null
+                && !savedUser.getOrg().getColor().isEmpty()) {
+            AppThemeManager.getInstance().updateOrganizationColor(savedUser.getOrg().getColor());
+        }
+
+        Zone.City savedCity = sharedPreferencesManager.getSelectedCity();
+        if (savedCity != null) {
+            appState.setSelectedCity(savedCity);
+        }
+
+        Zone savedZone = sharedPreferencesManager.getSelectedZone();
+        if (savedZone != null) {
+            appState.setSelectedZone(savedZone);
             navigateTo(HomeFragment.TAG, new HomeFragment());
+        } else {
+            navigateTo(CityZoneSelectionFragment.TAG, new CityZoneSelectionFragment());
         }
     }
     

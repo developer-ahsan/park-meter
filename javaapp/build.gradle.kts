@@ -19,7 +19,7 @@ android {
         applicationId = "com.parkmeter.og"
         minSdk = minSdkVersion
         targetSdk = latestSdkVersion
-        versionCode = 1
+        versionCode = 2
         versionName = "1.0.0"
 
         val backendUrl = project.property("EXAMPLE_BACKEND_URL").toString().trim('"')
@@ -62,7 +62,7 @@ android {
             isPseudoLocalesEnabled = false
             
             // Production optimizations
-            manifestPlaceholders["appName"] = "Parkapp Meter"
+            manifestPlaceholders["appName"] = "PARKAPP EVENTS"
             buildConfigField("boolean", "DEBUG", "false")
             buildConfigField("boolean", "ENABLE_LOGGING", "false")
         }
@@ -70,7 +70,7 @@ android {
         debug {
             applicationIdSuffix = ".debug"
             versionNameSuffix = "-debug"
-            manifestPlaceholders["appName"] = "Parkapp Meter (Debug)"
+            manifestPlaceholders["appName"] = "PARKAPP EVENTS (Debug)"
             buildConfigField("boolean", "DEBUG", "true")
             buildConfigField("boolean", "ENABLE_LOGGING", "true")
         }

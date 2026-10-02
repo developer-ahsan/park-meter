@@ -6,6 +6,9 @@ public class AppState {
     private boolean isZoneSelected;
     private String vehicleNumber;
     private String selectedLanguageCode = "en"; // Default to English
+    private AgentLoginResponse.AgentUser loggedInUser;
+    private String authToken;
+    private Zone.City selectedCity;
 
     public AppState() {
         this.isZoneSelected = false;
@@ -17,7 +20,15 @@ public class AppState {
 
     public void setSelectedZone(Zone selectedZone) {
         this.selectedZone = selectedZone;
-        this.selectedOrganization = selectedZone != null ? selectedZone.getOrganization() : null;
+        if (selectedZone != null && selectedZone.getOrganization() != null) {
+            String name = selectedZone.getOrganization().getOrgName();
+            // Only use zone's org when it is a full object (has a name).
+            // getZonesById returns org as a plain string ID, so after deserialization
+            // the Organization has only `id` set — keep the login org in that case.
+            if (name != null && !name.isEmpty()) {
+                this.selectedOrganization = selectedZone.getOrganization();
+            }
+        }
         this.isZoneSelected = selectedZone != null;
     }
 
@@ -66,7 +77,7 @@ public class AppState {
     }
 
     public String getOrganizationName() {
-        return selectedOrganization != null ? selectedOrganization.getOrgName() : "Parkapp Meter";
+        return selectedOrganization != null ? selectedOrganization.getOrgName() : "PARKAPP EVENTS";
     }
     
     // Get Zone ID for use in next screens
@@ -152,5 +163,31 @@ public class AppState {
         this.selectedOrganization = null;
         this.isZoneSelected = false;
         this.vehicleNumber = null;
+    }
+
+    public AgentLoginResponse.AgentUser getLoggedInUser() { return loggedInUser; }
+
+    public void setLoggedInUser(AgentLoginResponse.AgentUser user) {
+        this.loggedInUser = user;
+        if (user != null && user.getOrg() != null) {
+            this.selectedOrganization = user.getOrg();
+        }
+    }
+
+    public String getLoggedInUserId() {
+        return loggedInUser != null ? loggedInUser.getId() : null;
+    }
+
+    public String getAuthToken() { return authToken; }
+    public void setAuthToken(String token) { this.authToken = token; }
+
+    public Zone.City getSelectedCity() { return selectedCity; }
+    public void setSelectedCity(Zone.City city) { this.selectedCity = city; }
+
+    public void clearLoginSession() {
+        this.loggedInUser = null;
+        this.authToken = null;
+        this.selectedCity = null;
+        clearSelection();
     }
 } 

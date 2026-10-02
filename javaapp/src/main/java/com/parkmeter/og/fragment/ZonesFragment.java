@@ -253,6 +253,15 @@ public class ZonesFragment extends Fragment implements ZonesAdapter.OnZoneClickL
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        // Remove watcher BEFORE nulling etSearch
+        if (searchWatcher != null && etSearch != null) {
+            etSearch.removeTextChangedListener(searchWatcher);
+        }
+        searchWatcher = null;
+        if (zonesCall != null) {
+            zonesCall.cancel();
+            zonesCall = null;
+        }
         if (rvZones != null) {
             rvZones.setAdapter(null);
         }
@@ -264,14 +273,6 @@ public class ZonesFragment extends Fragment implements ZonesAdapter.OnZoneClickL
         tvErrorMessage = null;
         btnRetry = null;
         btnBack = null;
-        if (zonesCall != null) {
-            zonesCall.cancel();
-            zonesCall = null;
-        }
-        if (searchWatcher != null && etSearch != null) {
-            etSearch.removeTextChangedListener(searchWatcher);
-            searchWatcher = null;
-        }
     }
 
     @Override
